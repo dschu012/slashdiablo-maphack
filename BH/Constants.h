@@ -1062,3 +1062,22 @@ enum QuestFlags {
 
 #define ITEM_GROUP_GEM (ITEM_GROUP_AMETHYST|ITEM_GROUP_DIAMOND|ITEM_GROUP_EMERALD|ITEM_GROUP_RUBY|ITEM_GROUP_SAPPHIRE|ITEM_GROUP_TOPAZ|ITEM_GROUP_SKULL)
 
+enum Strings : unsigned short {
+	D2STR_STRMODALLRESISTANCES = 3610,	// All Resistances +%d
+	D2STR_STRMODALLSKILLLEVELS = 3611,	// +%d to All Skill Levels
+	D2STR_STRMODFIREDAMAGE = 3612,	// +%d fire damage
+	D2STR_STRMODFIREDAMAGERANGE = 3613,	// Adds %d-%d fire damage
+	D2STR_STRMODCOLDDAMAGE = 3614,	// +%d cold damage
+	D2STR_STRMODCOLDDAMAGERANGE = 3615,	// Adds %d-%d cold damage
+	D2STR_STRMODLIGHTNINGDAMAGE = 3616,	// +%d lightning damage
+	D2STR_STRMODLIGHTNINGDAMAGERANGE = 3617,	// Adds %d-%d lightning damage
+	D2STR_STRMODMAGICDAMAGE = 3618,	// +%d magic damage
+	D2STR_STRMODMAGICDAMAGERANGE = 3619,	// Adds %d-%d magic damage
+	D2STR_STRMODPOISONDAMAGE = 3620,	// +%d poison damage over %d seco...
+	D2STR_STRMODPOISONDAMAGERANGE = 3621,	// Adds %d-%d poison damage over ...
+	D2STR_STRMODMINDAMAGE = 3622,	// +%d damage
+	D2STR_STRMODMINDAMAGERANGE = 3623,	// Adds %d-%d damage
+	D2STR_STRMODENHANCEDDAMAGE = 3624,	// Enhanced damage
+	D2STR_IMPROVED_DAMAGE = 3625,	// Improved Damage
+	D2STR_IMPROVED_TO_HIT = 3626,	// Improved Attack Rating
+};

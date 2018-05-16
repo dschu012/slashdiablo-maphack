@@ -121,6 +121,7 @@ FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0xBE240,
 FUNCPTR(D2GFX, DrawAutomapCell, void __stdcall, (CellContext *context, DWORD xpos, DWORD ypos, RECT *cliprect, DWORD bright), -10079, -10060)
 ASMPTR(D2CLIENT, OverrideShrinePatch_ORIG, 0x1155B8, 0x101B08)//Updated 1.13c
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // D2Client Globals
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,6 +265,8 @@ ASMPTR(D2CLIENT, LoadAct_2, 0x62760, 0x2B420)
 ASMPTR(D2CLIENT, GetUnitFromId_I, 0xA4E20, 0x61480)
 VARPTR(D2CLIENT, pUnitTable, POINT, 0x10A608, 0x1047B8)
 
+ASMPTR(D2CLIENT, ParseStats_J, 0x54E10, 0x2CE40);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // D2Common Ordinals
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +297,8 @@ FUNCPTR(D2COMMON, GetSkillLevel, int __stdcall, (UnitAny* pUnit, Skill* pSkill, 
 FUNCPTR(D2COMMON, GetItemLevelRequirement, DWORD __stdcall, (UnitAny* pItem, UnitAny* pPlayer), -11015, -10929)
 FUNCPTR(D2COMMON, GetItemPrice, DWORD __stdcall, (UnitAny* MyUnit, UnitAny* pItem, DWORD U1_,DWORD U2_,DWORD U3_,DWORD U4_), -10107, -10186)
 FUNCPTR(D2COMMON, GetRepairCost, DWORD __stdcall, (DWORD _1, UnitAny* pUnit, DWORD dwNpcId, DWORD dwDifficulty, DWORD dwItemPriceList, DWORD _2), -10071, -10807)
-FUNCPTR(D2COMMON, GetItemMagicalMods, char* __stdcall, (WORD wPrefixNum), -10248, -10174)
+FUNCPTR(D2COMMON, GetItemMagicalMods, const char* __stdcall, (WORD wPrefixNum), -10248, -10174)
+FUNCPTR(D2COMMON, GetAffixTxt, AutoMagicTxt* __stdcall, (WORD wPrefixNum), -10248, -10174)
 FUNCPTR(D2COMMON, GetItemFromInventory, UnitAny *__stdcall, (Inventory* inv), -10460, -11132)
 FUNCPTR(D2COMMON, GetNextItemFromInventory, UnitAny *__stdcall, (UnitAny *pItem), -10464, -10879)
 
@@ -315,12 +319,21 @@ FUNCPTR(D2COMMON, CheckWaypoint, DWORD __stdcall, (DWORD WaypointTable, DWORD dw
 FUNCPTR(D2COMMON, IsTownByLevelNo, BOOL __stdcall, (DWORD dwLevelNo), -10416, -10367)
 FUNCPTR(D2COMMON, IsTownByRoom, BOOL __stdcall, (Room1* pRoom1), -10057, -10691)
 
+//todo
+FUNCPTR(D2COMMON, GetRunesTxtRecords, int* __stdcall, (void), -11032, -10981)
+FUNCPTR(D2COMMON, GetItemType, int __stdcall, (UnitAny *pItem), -11088, -10121)
+FUNCPTR(D2COMMON, IsMatchingType, BOOL __stdcall, (UnitAny *pItem, int iType), -10744, -10601)
+FUNCPTR(D2COMMON, GetBaseStatSigned, int __stdcall, (UnitAny *ptUnit, int nStat, int nLayer), -10680, -10216)
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // D2Common Globals
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-VARPTR(D2COMMON, sgptDataTable, DWORD, 0x99E1C, 0xA33F0)
-
+VARPTR(D2COMMON, sgptDataTable, BlizzardTXT*, 0x99E1C, 0xA33F0)
+//dunno if this right
+VARPTR(D2COMMON, AutoMagicTxt, AutoMagicTxt*, 0x9FBC8, 0xA4CE4)
+VARPTR(D2COMMON, RunesTxt, RunesTxt*, 0x9FBD8, 0xA4CF4)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // D2Common Stubs

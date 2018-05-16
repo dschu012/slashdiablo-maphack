@@ -166,6 +166,52 @@ struct Control {
 #pragma pack(push)
 #pragma pack(1)
 
+struct DamageStats
+{
+	DWORD nMinDmg;
+	DWORD nMaxDmg;
+	DWORD dword8;
+	DWORD dwordC;
+	BOOL nDmgRange;
+	DWORD dword14;
+	DWORD nMinDmgPercent;
+	DWORD nMaxDmgPercent;
+	DWORD dword20;
+	DWORD dword24;
+	BOOL nDmgPercentRange;
+	DWORD dword2C;
+	DWORD nMinColdDmg;
+	DWORD nMaxColdDmg;
+	DWORD dword38;
+	DWORD dword3C;
+	DWORD nColdDmgRange;
+	DWORD dword44;
+	DWORD nMinLightDmg;
+	DWORD nMaxLightDmg;
+	DWORD dword50;
+	DWORD dword54;
+	DWORD nLightDmgRange;
+	DWORD dword5C;
+	DWORD nMinFireDmg;
+	DWORD nMaxFireDmg;
+	DWORD dword68;
+	DWORD dword6C;
+	DWORD nFireDmgRange;
+	DWORD dword74;
+	DWORD nMinPsnDmg;
+	DWORD nMaxPsnDmg;
+	DWORD nPsnLen;
+	DWORD nPsnCount;
+	DWORD nPsnDmgRange;
+	DWORD dword8C;
+	DWORD nMinMagicDmg;
+	DWORD nMaxMagicDmg;
+	DWORD dword98;
+	DWORD dword9C;
+	DWORD nMagicDmgRange;
+	DWORD dwordA4;
+};
+
 struct RoomTile {
 	Room2* pRoom2;				//0x00
 	RoomTile* pNext; 			//0x04
@@ -439,7 +485,7 @@ struct ItemData {
 	WORD wVersion;					//0x30
 	WORD wRarePrefix;				//0x32
 	WORD wRareSuffix;				//0x34
-	WORD _14;						//0x36
+	WORD wAutoPrefix;				//0x36
 	WORD wPrefix[3];				//0x38
 	WORD wSuffix[3];				//0x3E
 	BYTE BodyLocation;				//0x44
@@ -736,16 +782,303 @@ struct InventoryLayout {
 	BYTE SlotPixelHeight;
 };
 
-struct MpqTable;
+struct LvlMazeTxt
+{
+	DWORD dwLevelId;                //0x00
+	DWORD dwRooms[3];               //0x04
+	DWORD dwSizeX;                  //0x10
+	DWORD dwSizeY;                  //0x14
+	DWORD dwMerge;                  //0x18
+};
 
-struct sgptDataTable {
-	MpqTable*	pPlayerClass;
-	DWORD		dwPlayerClassRecords;
-	MpqTable*	pBodyLocs;
-	DWORD		dwBodyLocsRecords;
-	MpqTable*	pStorePage;
-	DWORD		dwStorePageRecords;
-	MpqTable*	pElemTypes;
+struct LvlWarpTxt
+{
+	DWORD dwLevelId;
+	DWORD dwSelectX;
+	DWORD dwSelectY;
+	DWORD dwSelectDX;
+	DWORD dwSelectDY;
+	DWORD dwExitWalkX;
+	DWORD dwExitWalkY;
+	DWORD dwOffsetX;
+	DWORD dwOffsetY;
+	DWORD dwLitVersion;
+	DWORD dwTiles;
+	DWORD dwDirection;
+};
+
+
+struct PropertiesTxt
+{
+	WORD wProp;                   //0x00
+	BYTE nSet[8];                 //0x02
+	WORD wVal[7];                 //0x0A
+	BYTE nFunc[8];                //0x18
+	WORD wStat[7];                //0x20
+};
+
+#pragma pack(push)
+#pragma pack(1)
+//these might be duplicated with other names???
+struct ItemsTxtStat
+{
+	DWORD dwProp;                 //0x00
+	DWORD dwPar;                  //0x04
+	int dwMin;					  //0x08
+	int dwMax;			          //0x0C
+};
+
+struct AutoMagicTxt
+{
+	char szName[31];                //0x00
+	BYTE _1;						//0x1F
+	WORD wIndex;	                //0x20
+	WORD wVersion;                  //0x22
+	ItemsTxtStat hMods[3];          //0x24
+	WORD wSpawnable;                //0x54
+	WORD wTransformColor;           //0x56
+	DWORD dwLevel;                  //0x58
+	DWORD dwGroup;                  //0x5C
+	DWORD dwMaxLevel;               //0x60
+	BYTE nRare;                     //0x64
+	BYTE nLevelReq;                 //0x65
+	BYTE nClassSpecific;            //0x66
+	BYTE nClass;                    //0x67
+	WORD wClassLevelReq;            //0x68
+	WORD wIType[7];                 //0x6A
+	WORD wEType[5];                 //0x78
+	BYTE bFrequency;                //0x82
+	BYTE _2;						//0x83
+	DWORD dwDivide;                 //0x84
+	DWORD dwMultiply;               //0x88
+	DWORD dwAdd;                    //0x8C
+};
+
+
+struct SetItemsTxt
+{
+	WORD wSetItemId;               //0x00
+	char szName[32];               //0x02
+	WORD _1;	                   //0x22
+	DWORD dwTblIndex;              //0x24
+	union
+	{
+		DWORD dwCode;
+		char szCode[4];
+	};							   //0x28
+	DWORD _2;	                   //0x2C
+	WORD wLvl;                     //0x30
+	WORD wLvlReq;                  //0x32
+	DWORD dwRarity;                //0x34
+	DWORD dwCostMult;              //0x38
+	DWORD dwCostAdd;               //0x3C
+	BYTE nChrTransform;            //0x40
+	BYTE nInvTransform;            //0x41
+	char szFlippyFile[32];         //0x42
+	char szInvFile[32];            //0x62
+	WORD wDropSound;               //0x82
+	WORD wUseSound;                //0x84
+	BYTE nDropSfxFrame;            //0x86
+	BYTE nAddFunc;                 //0x87
+	ItemsTxtStat hStats[9];        //0x88
+	ItemsTxtStat hGreenStats[10];   //0x118
+};
+
+struct RunesTxt
+{
+	char szName[64];					 //0x00
+	char szRuneName[64];                 //0x40
+	BYTE bComplete;                      //0x80
+	BYTE bServer;                        //0x81
+	DWORD dwRwId;						 //0x82
+	WORD dwIType[6];                     //0x86
+	WORD dwEType[3];                     //0x92
+	DWORD dwRune[6];                     //0x98
+	ItemsTxtStat hStats[7];              //0xB0
+};
+
+struct UniqueItemsTxt
+{
+	WORD _1;	                  //0x00
+	char szName[34];              //0x02
+	DWORD dwVersion;              //0x24
+	union
+	{
+		DWORD dwCode;
+		char szCode[4];
+	};							  //0x28
+	DWORD dwUniqueItemFlags;      //0x2C
+	DWORD dwRarity;               //0x30
+	WORD wLvl;                    //0x34
+	WORD wLvlReq;                 //0x36
+	BYTE nChrTransform;           //0x38
+	BYTE nInvTransform;           //0x39
+	char szFlippyFile[32];        //0x3A
+	char szInvFile[34];           //0x5A
+	DWORD dwCostMult;             //0x7C
+	DWORD dwCostAdd;              //0x80
+	WORD wDropSound;              //0x84
+	WORD wUseSound;               //0x86
+	DWORD dwDropSfxFrame;         //0x88   
+	ItemsTxtStat hStats[12];      //0x90
+};
+#pragma pack(pop)
+
+struct D2TXTLinkageStrc
+{
+	void* pLink;
+	DWORD Unk[3];   //don't care to check
+};
+
+struct BlizzardTXT	//[D2Common.0x96A20] = D2Common.0xA9608
+{
+	void* pPlayerClass;                                 //+00000000   01415B48      playerclass.txt
+	D2TXTLinkageStrc* iPlayerClass;                     //+00000004   01410524      playerclass info
+	void* pBodyLocs;                                    //+00000008   01415578      bodylocs.txt
+	D2TXTLinkageStrc* iBodyLocs;                        //+0000000C   01410504      bodylocs info
+	void* pStorepage;                                   //+00000010   01414CC8      storepage.txt
+	D2TXTLinkageStrc* iStorePage;                       //+00000014   01415B24      storepage info
+	void* pElemtypes;                                   //+00000018   01414958      elemtypes.txt
+	D2TXTLinkageStrc* iElemtypes;                       //+0000001C   01415B04      elemtypes info
+	void* pHitClass;                                    //+00000020   01414148      hitclass.txt
+	D2TXTLinkageStrc* iHitClass;                        //+00000024   01415AE4      hitclass info
+	void* pMonModeStub;                                 //+00000028   01416878      monmode.txt
+	D2TXTLinkageStrc* iMonMode;                         //+0000002C   01415514      monmode info
+	void* pPlayerModeStub;                              //+00000030   014162E8      plrmode.txt
+	D2TXTLinkageStrc* iPlayerMode;                      //+00000034   01414934      plrmode info
+	void* pSkillCalc;                                   //+00000038   05279860      skillcalc.txt
+	D2TXTLinkageStrc* iSkillCalc;                       //+0000003C   01410014      skillcalc info
+	BYTE* pSkillsCode;                                  //+00000040   0537A514      skillscode formulae
+	DWORD dwSkillsCodeSize;                             //+00000044   00001768      size of skillscode block
+	DWORD dwSkillsCodeSizeEx;                           //+00000048   00001768      size of skillscode block
+	BYTE* pSkillDescCode;                               //+0000004C   0535C994      skilldesccode formulae
+	DWORD dwSkillDescCodeSize;                          //+00000050   0000107F      size of skilldesccode block
+	DWORD dwSkillDescCodeSizeEx;                        //+00000054   0000107F      size of skilldesccode block
+	const char* pMissileCalc;                           //+00000058   01419C28      misscalc.txt
+	D2TXTLinkageStrc* iMissileCalc;                     //+0000005C   01417024      misscalc info
+	BYTE* pMissCode;                                    //+00000060   014A4944      misscode formulae
+	DWORD dwMissCodeSize;                               //+00000064   000000D4      size of misscode block
+	DWORD dwMissCodeSizeEx;                             //+00000068   000000D4      size of misscode block
+	const char* pSkillCode;                             //+0000006C   052C445C      skillcode.txt (Id from skills.txt)
+	D2TXTLinkageStrc* iSkillCode;                       //+00000070   0141F084      skillcode info
+	void* pEvents;                                      //+00000074   0141ACA8      events.txt
+	D2TXTLinkageStrc* iEvents;                          //+00000078   0141F064      events info
+	DWORD* pCompCodes;                                  //+0000007C   06C4FAFC      compcode.txt
+	D2TXTLinkageStrc* iCompCodes;                       //+00000080   01410544      compcode info
+	int nCompCodes;                                     //+00000084   00000073      # of compcode records
+	void* pMonAI;                                       //+00000088   0564351C      monai.txt
+	D2TXTLinkageStrc* iMonAI;                           //+0000008C   01414914      monai info
+	int nMonAI;                                         //+00000090   00000098      # of monai records
+	D2TXTLinkageStrc* iItems;                           //+00000094   014BA014      items info
+	BYTE* pItemsCode;                                   //+00000098   013FDED8      itemscode formulae
+	DWORD dwItemsCodeSize;                              //+0000009C   000010E0      size of itemscode block
+	DWORD dwItemsCodeSizeEx;                            //+000000A0   000010E0      size of itemscode block
+	PropertiesTxt* pProperties;							//+000000A4   0579E218      properties.txt
+	D2TXTLinkageStrc* iProperties;                      //+000000A8   01489464      properties info
+	int nProperties;                                    //+000000AC   00000110      # of properties records
+	D2TXTLinkageStrc* iRunes;                           //+000000B0   014C4774      runes info
+	void* pMercDesc;									//+000000B4   01417208      hiredesc.txt
+	D2TXTLinkageStrc* iMercDesc;                        //+000000B8   01415534      hiredesc info
+	void* pStates;										//+000000BC   05767EA0      states.txt (limit = 255)
+	D2TXTLinkageStrc* iStates;                          //+000000C0   014A16C4      states info
+	int nStates;                                        //+000000C4   000000BD      # of states records
+	void* pStateMasks;                                  //+000000C8   014A2574      statemasks.txt
+	DWORD* fStateMasks[40];                             //+000000CC   014A2574      statemasks[40] (statemasks.txt segment array)
+	short* pProgressiveStates;                          //+0000016C   014A23E4      progressive-state list
+	int nProgressiveStates;                             //+00000170   00000006      # of progressive states
+	short* pCurseStates;                                //+00000174   014A2254      curse-state list
+	int nCurseStates;                                   //+00000178   0000001A      # of curse states
+	short* pTransformStates;                            //+0000017C   014A20C4      transform-state list
+	int nTransformStates;                               //+00000180   00000007      # of transform states
+	short* pActionStates;                               //+00000184   014A3E74      action-state list
+	int nActionStates;                                  //+00000188   00000007      # of action states
+	short* pColourStates;                               //+0000018C   014A3CE4      color-state list
+	int nColourStates;                                  //+00000190   00000002      # of color states
+	void* pSoundCodes;                                  //+00000194   057656BC      soundcode.txt (sound column from sounds.txt)
+	D2TXTLinkageStrc* iSoundCodes;                      //+00000198   0141F0E4      soundcode info
+	int nSoundCodes;                                    //+0000019C   00000000      # of soundcode records (blanked out later)
+	void* pHirelings;									//+000001A0   055D8CD8      hirelings.txt (limit = 256)
+	int nHirelings;                                     //+000001A4   00000078      # of hirelings records
+	int pMercFirst[256];                                //+000001A8   00000000      array of 256 integers (namefirst column from hirelings.txt)
+	int pMercLast[256];		                            //+000005A8   0000000C      array of 256 integers (namelast column from hirelings.txt)   
+	void* pNPCs;                                        //+000009A8   05724F74      npcs.txt
+	int nNPCs;                                          //+000009AC   00000011      # of npcs records
+	void* pColours;                                     //+000009B0   01417568      colors.txt
+	D2TXTLinkageStrc* iColours;                         //+000009B4   01415554      colors info
+	D2TXTLinkageStrc* iTreasureClassEx;                 //+000009B8   014C4714      treasureclassex info
+	void* pTreasureClassEx;								//+000009BC   05718D98      treasureclassex.txt (limit = 65534 - autotcs#)
+	int nTreasureClassEx;                               //+000009C0   0000043C      # of treasureclassex records
+	DWORD* aTreasureClass[45];                          //+000009C4   0571D074      chest treasureclassex list (an array of 45 pointers)
+	void* pMonstats;									//+00000A78   04FE0014      monstats.txt (limit = 32766)
+	D2TXTLinkageStrc* iMonstats;                        //+00000A7C   0143C024      monstats info
+	int nMonstats;                                      //+00000A80   000002E1      # of monstats records
+	void* pMonSounds;                                   //+00000A84   013EBC9C      monsounds.txt
+	D2TXTLinkageStrc* iMonSounds;                       //+00000A88   01438024      monsounds info
+	int nMonSounds;                                     //+00000A8C   0000008D      # of monsounds records
+	void* pMonstats2;									//+00000A90   05287408      monstats2.txt (no sign of that 1023 record limit)
+	D2TXTLinkageStrc* iMonstats2;                       //+00000A94   01502014      monstats2 info
+	int nMonstats2;                                     //+00000A98   00000245      # of monstats2 records
+	void* pMonPlace;                                    //+00000A9C   01412648      monplace.txt
+	D2TXTLinkageStrc* iMonPlace;                        //+00000AA0   01417BA4      monplace info
+	int nMonPlace;                                      //+00000AA4   00000025      # of monplace records
+	void* pMonPreset;                                   //+00000AA8   057248B0      monpreset.txt
+	void* aMonPresetI[5];                               //+00000AAC   057248B0      array of 5 pointers to the monpreset sections for each of the 5 acts
+	void* aMonPresetII[5];                              //+00000AC0   0000002F      array of 5 integers (# of records for monpreset in each of the 5 acts)
+	void* pSuperUniques;								//+00000AD4   05364928      superuniques.txt (limit = 512)
+	D2TXTLinkageStrc* iSuperUniques;                    //+00000AD8   0145A1F4      superuniques info
+	int nSuperUniques;                                  //+00000ADC   00000042      # of superunique records
+	WORD aSuperUniques[66];                             //+00000AE0   00010000      array of 66 words (the IdNos of the default superuniques, new ones are not added here [thankfully])
+	void* pMissiles;									//+00000B64   05590014      missiles.txt (does some fixing for collidetype > 8)
+	D2TXTLinkageStrc* iMissiles;                        //+00000B68   01492014      missiles info
+	int nMissiles;                                      //+00000B6C   000002C4      # of missiles records
+	void* pMonLvl;										//+00000B70   013B0064      monlvl.txt
+	int nMonLvl;                                        //+00000B74   0000006F      # of monlvl records
+	void* pMonSeq;                                      //+00000B78   05375900      monseq.txt
+	D2TXTLinkageStrc* iMonSeq;                          //+00000B7C   0143A024      monseq info
+	int nMonSeq;                                        //+00000B80   000003F2      # of monseq records
+	void* pMonSeqTable;									//+00000B84   0143E7E4      sequences table (created from monseq.txt)
+	int nMonSeqTable;                                   //+00000B88   0000003C      # of sequences
+	void* pSkillDesc;									//+00000B8C   05741104      skilldesc.txt (limit = 32766) [JL and not JLE]
+	D2TXTLinkageStrc* iSkillDesc;                       //+00000B90   014B8024      skilldesc info
+	int nSkillDesc;                                     //+00000B94   000000DD      # of skilldesc records
+	void* pSkills;										//+00000B98   056E4D78      skills.txt (limit = 32766) [JL and not JLE]
+	D2TXTLinkageStrc* iSkills;                          //+00000B9C   014B50E4      skills info
+	int nSkills;                                        //+00000BA0   00000173      # of skills records
+	int* nClassSkillCount;                              //+00000BA4   014B9014      class skill count list
+	int nHighestClassSkillCount;                        //+00000BA8   0000001E      # highest class skill count
+	short* nClassSkillList;                             //+00000BAC   014BCB54      class skill list
+	int nPassiveSkills;                                 //+00000BB0   0000001C      # of passive skills
+	WORD* pPassiveSkills;								//+00000BB4   014BCB04      passiveskill list
+	D2TXTLinkageStrc* iOverlay;                         //+00000BB8   01484024      overlay info
+	void* pOverlay;										//+00000BBC   05352F54      overlay.txt
+	int nOverlay;                                       //+00000BC0   00000125      # of overlay records
+	void* pCharStats;									//+00000BC4   057AD178      charstats.txt
+	int nCharStats;                                     //+00000BC8   00000007      # of charstats records
+	void* pItemStatCost;								//+00000BCC   05219760      itemstatcost.txt (limit = 510) [511 used as END_OF_STATS in 'GF/JM' files]
+	D2TXTLinkageStrc* iItemStatCost;                    //+00000BD0   0148C024      itemstatcost info
+	int nItemStatCost;                                  //+00000BD4   0000016E      # of itemstatcost records
+	void* pOPStats;										//+00000BD8   014882A4      opstats nesting table
+	int nOPStats;										//+00000BDC   000000D3      # of nested opstats
+	void* pMonEquip;									//+00000BE0   013B3798      monequip.txt (limit = 32766)
+	int nMonEquip;                                      //+00000BE4   0000002D      # of monequip records
+	void* pPetType;										//+00000BE8   05774138      pettype.txt (limit = 511)
+	D2TXTLinkageStrc* iPetType;                         //+00000BEC   01486024      pettype info
+	int nPetType;                                       //+00000BF0   00000014      # of pettype records
+	D2TXTLinkageStrc* iItemTypes;                       //+00000BF4   0141E024      itemtypes info
+	void* pItemTypes;									//+00000BF8   050D14AC      itemtypes.txt
+	int nItemTypes;                                     //+00000BFC   00000069      # of itemtypes records
+	int nItemTypesIndex;                                //+00000C00   00000004      (itemtypes#+31)/32
+	DWORD* pItemTypesNest;                              //+00000C04   0537C41C      itemtypes nesting table
+	D2TXTLinkageStrc* iSets;                            //+00000C08   014B3CE4      sets info
+	void* pSets;                                        //+00000C0C   057A162C      sets.txt (limit = 32766)
+	int nSets;                                          //+00000C10   00000020      # of sets records
+	D2TXTLinkageStrc* iSetItems;                        //+00000C14   014B1024      setitems info
+	SetItemsTxt* pSetItems;								//+00000C18   056BBAC0      setitems.txt (limit = 32766)
+	int nSetItems;                                      //+00000C1C   0000007F      # of setitems records
+	D2TXTLinkageStrc* iUniqueItems;                     //+00000C20   014AA044      uniqueitems info
+	UniqueItemsTxt* pUniqueItems;						//+00000C24   0510E8B4      uniqueitems.txt (limit = 32766)
+	int nUniqueItems;                                   //+00000C28   00000191      # of uniqueitems records
+	//ect...
 };
 
 #pragma warning ( pop )
