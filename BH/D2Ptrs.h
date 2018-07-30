@@ -324,6 +324,7 @@ FUNCPTR(D2COMMON, GetRunesTxtRecords, int* __stdcall, (void), -11032, -10981)
 FUNCPTR(D2COMMON, GetItemType, int __stdcall, (UnitAny *pItem), -11088, -10121)
 FUNCPTR(D2COMMON, IsMatchingType, BOOL __stdcall, (UnitAny *pItem, int iType), -10744, -10601)
 FUNCPTR(D2COMMON, GetBaseStatSigned, int __stdcall, (UnitAny *ptUnit, int nStat, int nLayer), -10680, -10216)
+FUNCPTR(D2COMMON, GetBaseStat, int __stdcall, (UnitAny *ptUnit, int nStat, int nLayer), -10587, 0)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -331,9 +332,10 @@ FUNCPTR(D2COMMON, GetBaseStatSigned, int __stdcall, (UnitAny *ptUnit, int nStat,
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 VARPTR(D2COMMON, sgptDataTable, BlizzardTXT*, 0x99E1C, 0xA33F0)
-//dunno if this right
 VARPTR(D2COMMON, AutoMagicTxt, AutoMagicTxt*, 0x9FBC8, 0xA4CE4)
 VARPTR(D2COMMON, RunesTxt, RunesTxt*, 0x9FBD8, 0xA4CF4)
+VARPTR(D2COMMON, ArmorTxt, D2ItemsTxt*, 0x9FBA4, 0)
+VARPTR(D2COMMON, ArmorTxtRecords, DWORD, 0x9FBA8, 0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // D2Common Stubs

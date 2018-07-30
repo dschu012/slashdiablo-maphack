@@ -1081,3 +1081,5 @@ enum Strings : unsigned short {
 	D2STR_IMPROVED_DAMAGE = 3625,	// Improved Damage
 	D2STR_IMPROVED_TO_HIT = 3626,	// Improved Attack Rating
 };
+
+#define ITEM_TYPE_ALLARMOR 50

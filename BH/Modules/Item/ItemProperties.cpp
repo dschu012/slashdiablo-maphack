@@ -31,15 +31,46 @@ void ItemProperties::OnUnload() {
 }
 
 
+static D2ItemsTxt* GetArmorText(UnitAny* pItem) {
+	ItemText* itemTxt = D2COMMON_GetItemText(pItem->dwTxtFileNo);
+	int armorTxtRecords = *p_D2COMMON_ArmorTxtRecords;
+	for (int i = 0; i < armorTxtRecords; i++) {
+		D2ItemsTxt* armorTxt = &(*p_D2COMMON_ArmorTxt)[i];
+		if (strcmp(armorTxt->szCode, itemTxt->szCode) == 0) {
+			return armorTxt;
+		}
+	}
+}
+
 void __stdcall ItemProperties::DrawProperties(wchar_t *wTxt)
 {
 	//Maybe print stuff like base/min/max rolls of armor and such...
-	/*
-	UnitAny* ptItem = *p_D2CLIENT_SelectedInvItem;
-	if (!ptItem) return;
-	int aLen = wcslen(wTxt);
-	swprintf_s(wTxt + aLen, 1024 - aLen, L"Test\n");
-	*/
+	UnitAny* pItem = *p_D2CLIENT_SelectedInvItem;
+	if (!pItem) return;
+	//Any Armor ItemTypes.txt
+	if (D2COMMON_IsMatchingType(pItem, ITEM_TYPE_ALLARMOR)) {
+		int aLen = 0;
+		aLen = wcslen(wTxt);
+		D2ItemsTxt* armorTxt = GetArmorText(pItem);
+		DWORD base = D2COMMON_GetBaseStat(pItem, STAT_DEFENSE, 0);
+		DWORD min = armorTxt->dwMinAc;
+		DWORD max = armorTxt->dwMaxAc;
+		if (pItem->pItemData->dwFlags & ITEM_ETHEREAL) {
+			min = floor(min * 1.50);
+			max = floor(max * 1.50);
+			//hack... if not in range we assume it is ebugged
+			if (!(base <= max && base >= min)) {
+				min = floor(min * 1.50);
+				max = floor(max * 1.50);
+			}
+		}
+		if (base == (max + 1)) {
+			swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d%s\n", L"ÿc9", base, L"ÿc3");
+		}
+		else {
+			swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d [%d-%d]%s\n", L"ÿc9", base, min, max, L"ÿc3");
+		}
+	}
 }
 
 static RunesTxt* GetRunewordTxtById(int rwId)
