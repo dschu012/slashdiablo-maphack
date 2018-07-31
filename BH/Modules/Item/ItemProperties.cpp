@@ -64,12 +64,7 @@ void __stdcall ItemProperties::DrawProperties(wchar_t *wTxt)
 				max = floor(max * 1.50);
 			}
 		}
-		if (base == (max + 1)) {
-			swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d%s\n", L"ÿc9", base, L"ÿc3");
-		}
-		else {
-			swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d [%d-%d]%s\n", L"ÿc9", base, min, max, L"ÿc3");
-		}
+		swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d [%d-%d]%s\n", L"ÿc9", base, min, (max+1), L"ÿc3");
 	}
 }
 
