@@ -59,7 +59,11 @@ namespace Drawing {
 			//Handy function to have!
 			static POINT GetTextSize(std::string text, unsigned int font);
 
+			static POINT GetTextSize(wchar_t* text, unsigned int font);
+
 			//Static draw text function
 			static bool Draw(unsigned int x, unsigned int y, int align, unsigned int font, TextColor color, std::string text, ...);
+
+			static bool Draw(unsigned int x, unsigned int y, int align, unsigned int font, TextColor color, wchar_t* text, ...);
 	};
 };

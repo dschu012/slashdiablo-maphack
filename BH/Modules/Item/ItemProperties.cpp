@@ -45,26 +45,28 @@ static D2ItemsTxt* GetArmorText(UnitAny* pItem) {
 void __stdcall ItemProperties::DrawProperties(wchar_t *wTxt)
 {
 	//Maybe print stuff like base/min/max rolls of armor and such...
+
 	UnitAny* pItem = *p_D2CLIENT_SelectedInvItem;
 	if (!pItem) return;
 	//Any Armor ItemTypes.txt
-	if (D2COMMON_IsMatchingType(pItem, ITEM_TYPE_ALLARMOR)) {
+	if (D2COMMON_IsMatchingType(pItem, 50)) {
 		int aLen = 0;
 		aLen = wcslen(wTxt);
 		D2ItemsTxt* armorTxt = GetArmorText(pItem);
 		DWORD base = D2COMMON_GetBaseStat(pItem, STAT_DEFENSE, 0);
 		DWORD min = armorTxt->dwMinAc;
-		DWORD max = armorTxt->dwMaxAc;
+		DWORD max = armorTxt->dwMaxAc + 1;
 		if (pItem->pItemData->dwFlags & ITEM_ETHEREAL) {
-			min = floor(min * 1.50);
-			max = floor(max * 1.50);
-			//hack... if not in range we assume it is ebugged
-			if (!(base <= max && base >= min)) {
-				min = floor(min * 1.50);
-				max = floor(max * 1.50);
-			}
+			min = (DWORD)(min * 1.50);
+			max = (DWORD)(max * 1.50);
 		}
-		swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d [%d-%d]%s\n", L"ÿc9", base, min, (max+1), L"ÿc3");
+		//hack... if not in range we assume it is ebugged
+		if (base > max) {
+			swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d [%d-%d]%s\n", L"ÿc9", base, (DWORD)(armorTxt->dwMinAc * 2.25), (DWORD)(armorTxt->dwMaxAc * 2.25), L"ÿc3");
+		}
+		else {
+			swprintf_s(wTxt + aLen, 1024 - aLen, L"%sBase Defense: %d [%d-%d]%s\n", L"ÿc9", base, min, max, L"ÿc3");
+		}
 	}
 }
 
