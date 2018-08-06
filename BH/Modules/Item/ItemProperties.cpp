@@ -49,7 +49,7 @@ void __stdcall ItemProperties::DrawProperties(wchar_t *wTxt)
 	UnitAny* pItem = *p_D2CLIENT_SelectedInvItem;
 	if (!pItem) return;
 	//Any Armor ItemTypes.txt
-	if (D2COMMON_IsMatchingType(pItem, 50)) {
+	if (D2COMMON_IsMatchingType(pItem, ITEM_TYPE_ALLARMOR)) {
 		int aLen = 0;
 		aLen = wcslen(wTxt);
 		D2ItemsTxt* armorTxt = GetArmorText(pItem);

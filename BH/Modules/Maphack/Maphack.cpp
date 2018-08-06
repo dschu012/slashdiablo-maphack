@@ -798,7 +798,7 @@ int HoverMonsterColor(UnitAny *pUnit) {
 		return White;
 }
 
-int HoverObjectPatch(UnitAny* pUnit, DWORD unk1, DWORD unk2, DWORD unk3, wchar_t *wTxt)
+int HoverObjectPatch(UnitAny* pUnit, DWORD tY, DWORD unk1, DWORD unk2, DWORD tX, wchar_t *wTxt)
 {
 	if (!pUnit || pUnit->dwType != UNIT_MONSTER || pUnit->pMonsterData->pMonStatsTxt->dwFlags.bNPC || !pUnit->pMonsterData->pMonStatsTxt->dwFlags.bKillable)
 		return 0;
@@ -818,9 +818,12 @@ int HoverObjectPatch(UnitAny* pUnit, DWORD unk1, DWORD unk2, DWORD unk3, wchar_t
 	}
 	double maxhp = (double)(D2COMMON_GetUnitStat(pUnit, STAT_MAXHP, 0) >> 8);
 	double hp = (double)(D2COMMON_GetUnitStat(pUnit, STAT_HP, 0) >> 8);
-	Texthook::Draw(Hook::GetScreenWidth() / 2, 8, Center, 6, White, L"ÿc7%d ÿc8%d ÿc1%d ÿc9%d ÿc3%d ÿc2%d", dwResistances[0], dwResistances[1], dwResistances[2], dwResistances[3], dwResistances[4], dwResistances[5]);
-	Texthook::Draw(Hook::GetScreenWidth() / 2, 20, Center, 6, White, L"ÿc%d%s", HoverMonsterColor(pUnit), wTxt);
-	Texthook::Draw(Hook::GetScreenWidth() / 2, 28, Center, 6, White, L"%.0f%%", (hp / maxhp) * 100.0);
+	POINT p = Texthook::GetTextSize(wTxt, 1);
+	int center = tX + (p.x / 2);
+	int y = tY - p.y;
+	Texthook::Draw(center, y - 12, Center, 6, White, L"ÿc7%d ÿc8%d ÿc1%d ÿc9%d ÿc3%d ÿc2%d", dwResistances[0], dwResistances[1], dwResistances[2], dwResistances[3], dwResistances[4], dwResistances[5]);
+	Texthook::Draw(center, y, Center, 6, White, L"ÿc%d%s", HoverMonsterColor(pUnit), wTxt);
+	Texthook::Draw(center, y + 8, Center, 6, White, L"%.0f%%", (hp / maxhp) * 100.0);
 	return 1;
 }
 
@@ -884,14 +887,15 @@ void __declspec(naked) HoverObject_Interception()
 		push ecx
 		push edx
 		call D2CLIENT_HoveredUnit_I
+		push[esp + 0x10]
 		push eax
 		call HoverObjectPatch
 		cmp eax, 0
 		je origobjectname
 		push rtn
-		ret 0x24
+		ret 0x28
 		origobjectname:
-		pop eax
+		add esp, 0x8
 		pop edx
 		pop ecx
 		pop eax
