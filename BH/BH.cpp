@@ -127,6 +127,7 @@ void BH::Initialize()
 	new AutoTele();
 	new Party();
 	new ItemMover();
+	new ItemProperties();
 	new StashExport();
 	new Maphack();
 	new ChatColor();

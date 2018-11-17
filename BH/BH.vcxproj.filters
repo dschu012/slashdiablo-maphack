@@ -255,6 +255,9 @@
     <ClCompile Include="Modules\ChatColor\ChatColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Modules\Item\ItemProperties.cpp">
+      <Filter>BH\Modules\Item</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D2Structs.h">
@@ -424,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="Modules\ChatColor\ChatColor.h">
       <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="Modules\Item\ItemProperties.h">
+      <Filter>BH\Modules\Item</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
