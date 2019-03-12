@@ -7,7 +7,7 @@ configuration: Packaging
 
 build:
   project: BH.sln
-  verbosity: detailed
+  verbosity: normal
 
 artifacts:
   Packaging\BH.dll
@@ -16,6 +16,6 @@ deploy:
   - provider: GitHub
     artifact: Packaging\BH.dll
     draft: false
-    prerelease: false
+    prerelease: true
     on:
-      branch: master  
+      branch: feature/*  
