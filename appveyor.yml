@@ -1,0 +1,21 @@
+version: 1.9.1.{build}
+
+max_jobs: 1
+
+platform: Win32
+configuration: Packaging
+
+build:
+  project: BH.sln
+  verbosity: detailed
+
+artifacts:
+  Packaging\BH.dll
+
+deploy:
+  - provider: GitHub
+    artifact: Packaging\BH.dll
+    draft: false
+    prerelease: false
+    on:
+      branch: master  
