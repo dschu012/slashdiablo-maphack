@@ -1,0 +1,16 @@
+kind: pipeline
+name: packaging-win32
+
+platform:
+  os: windows
+  arch: amd64
+
+steps:
+  - name: build
+    image: microsoft/windowsservercore:1809-amd64
+    commands:
+      - msbuild BH.sln /p:Configuration=Packaging /p:Platform=Win32
+    when:
+      event:
+      - push
+      - tag
