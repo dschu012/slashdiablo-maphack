@@ -15,7 +15,68 @@ Patch* createGameBox = new Patch(Call, D2MULTI, { 0x149EF, 0xAD8F }, (int)D2MULT
 Patch* destoryGameList = new Patch(Call, D2MULTI, { 0x11DC3, 0x8413 }, (int)Gamefilter::DestroyGamelist, 5);
 Patch* listRefresh = new Patch(Call, D2MULTI, { 0xDF4E, 0x121EE }, (int)D2MULTI_GameListRefresh_Interception, 5);
 
+CellFile cf;
+CellContext cc;
+
+static const std::string base64_chars =
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+"abcdefghijklmnopqrstuvwxyz"
+"0123456789+/";
+
+
+static inline bool is_base64(BYTE c) {
+	return (isalnum(c) || (c == '+') || (c == '/'));
+}
+
+
+static std::vector<BYTE> base64_decode(std::string const& encoded_string) {
+	int in_len = encoded_string.size();
+	int i = 0;
+	int j = 0;
+	int in_ = 0;
+	BYTE char_array_4[4], char_array_3[3];
+	std::vector<BYTE> ret;
+
+	while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
+		char_array_4[i++] = encoded_string[in_]; in_++;
+		if (i == 4) {
+			for (i = 0; i < 4; i++)
+				char_array_4[i] = base64_chars.find(char_array_4[i]);
+
+			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+			char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+			for (i = 0; (i < 3); i++)
+				ret.push_back(char_array_3[i]);
+			i = 0;
+		}
+	}
+
+	if (i) {
+		for (j = i; j < 4; j++)
+			char_array_4[j] = 0;
+
+		for (j = 0; j < 4; j++)
+			char_array_4[j] = base64_chars.find(char_array_4[j]);
+
+		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+		char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+		for (j = 0; (j < i - 1); j++) ret.push_back(char_array_3[j]);
+	}
+
+	return ret;
+}
+
 void Gamefilter::OnLoad() {
+	std::vector<BYTE> bytes = base64_decode("BgAAAAEAAAAAAAAAzc3NzQEAAAABAAAAHAAAAAAAAAAQAAAACwAAAAAAAAAAAAAAAAAAAAUBAADGAAAAEAgICAgICAgICAgICAgICAiAENggICAgICAgICAgICAgINaAEAhQUFBQUFBQUFBQUFBQUAiAENggICAgICAgICAgICAgINaAEJGXl5eXl5eXl1BQUFBQUAiAEJHfl9+X35fflyAgICAgINaAEJGX35ffl9+Xl1BQUFBQUAiAEJHfl9+X35fflyAgICAgINaAEJGX35ffl9+Xl1BQUFBQUAiAEJHfl9+X35fflyAgICAgINaAEI6RkZGRkZGRkQgICAgICAiAzc3N");
+	memcpy(&cf, bytes.data(), bytes.size());
+	memset(&cc, 0, sizeof(cc));
+	cc.pCellFile = &cf;
+	D2CMP_InitCellFile(cc.pCellFile, &cc.pCellFile, "?", 0, -1, "?");
+
 	if (!D2CLIENT_GetPlayerUnit()) {
 		createGameBox->Install();
 		destoryGameList->Install();
@@ -26,6 +87,7 @@ void Gamefilter::OnLoad() {
 }
 
 void Gamefilter::OnUnload() {
+	D2CMP_DeleteCellFile(cc.pCellFile);
 	createGameBox->Remove();
 	destoryGameList->Remove();
 	listRefresh->Remove();
@@ -188,8 +250,14 @@ VOID __stdcall Gamefilter::DestroyGamelist(Control* pControl)
 
 void Gamefilter::OnOOGDraw() {
 	// filterBox is instantiated in the create game box handler, so we can't
-	// draw the join game screen until we have it
+	// draw the join game screen until we have 
+
+	//	D2GFX_DrawAutomapCell2(&cc, 200, 200, -1, 5, NULL);
 	if((*p_D2MULTI_GameListControl) && filterBox) {
+
+		D2GFX_DrawAutomapCell2(&cc, (*p_D2MULTI_GameListControl)->dwPosX + (*p_D2MULTI_GameListControl)->dwSizeX - 46, 
+			(*p_D2MULTI_GameListControl)->dwPosY - (*p_D2MULTI_GameListControl)->dwSizeY + 13, -1, 5, NULL);
+
 		wstringstream wFilterStream;
 		wstring wFilterString = L"Games: ";
 		wstring wFilter = filterBox->wText;
