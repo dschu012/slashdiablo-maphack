@@ -333,6 +333,20 @@ namespace ItemDisplay {
 
 		item_display_initialized = true;
 		rules.clear();
+
+		
+		vector<string> externalItemConfigs;
+		BH::config->ReadArray("ItemConfig", externalItemConfigs);
+		for (string path : externalItemConfigs) {
+			Config* c = new Config(path);
+			if (!c->Parse()) {
+				string msg = "Could not find ItemConfig.\nAttempted to load " +
+					path + " (failed)";
+				MessageBox(NULL, msg.c_str(), "Failed to load ItemConfig", MB_OK);
+			}
+			c->ReadMapList("ItemDisplay", rules);
+		}
+
 		BH::config->ReadMapList("ItemDisplay", rules);
 		for (unsigned int i = 0; i < rules.size(); i++) {
 			string buf;
