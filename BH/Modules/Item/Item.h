@@ -57,6 +57,7 @@ class Item : public Module {
 		unsigned int showPlayer;
 		static UnitAny* viewingUnit;
 		Drawing::UITab* settingsTab;
+		unsigned int toggleItemDisplay;
 	public:
 
 		Item() : Module("Item") {};

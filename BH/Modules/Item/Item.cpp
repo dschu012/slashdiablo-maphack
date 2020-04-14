@@ -60,6 +60,7 @@ map<std::string, Toggle> Item::Toggles;
 UnitAny* Item::viewingUnit;
 
 Patch* itemNamePatch = new Patch(Call, D2CLIENT, { 0x92366, 0x96736 }, (int)ItemName_Interception, 6);
+Patch* itemAlwayShowPatch = new Patch(NOP, D2CLIENT, { 0xC3D4E, 0x0 }, (int)ItemName_Interception, 8);
 Patch* itemPropertiesPatch = new Patch(Jump, D2CLIENT, { 0x5612C, 0x2E3FC }, (int)GetProperties_Interception, 6);
 Patch* itemPropertyStringDamagePatch = new Patch(Call, D2CLIENT, { 0x55D7B, 0x2E04B }, (int)GetItemPropertyStringDamage_Interception, 5);
 Patch* itemPropertyStringPatch = new Patch(Call, D2CLIENT, { 0x55D9D, 0x2E06D }, (int) GetItemPropertyString_Interception, 5);
@@ -76,6 +77,9 @@ void Item::OnLoad() {
 	viewInvPatch2->Install();
 	viewInvPatch3->Install();
 
+	BH::config->ReadKey("Always Display Items", "VK_Z", toggleItemDisplay);
+	if(Toggles["Always Display Items"].state)
+		itemAlwayShowPatch->Install();
 	itemPropertiesPatch->Install();
 	itemPropertyStringDamagePatch->Install();
 	itemPropertyStringPatch->Install();
@@ -213,6 +217,15 @@ void Item::OnLoop() {
 }
 
 void Item::OnKey(bool up, BYTE key, LPARAM lParam, bool* block) {
+	bool ctrlState = ((GetKeyState(VK_LCONTROL) & 0x80) || (GetKeyState(VK_RCONTROL) & 0x80));
+	if (up && (ctrlState && key == 0x5a || toggleItemDisplay)) {
+		*block = true;
+		PrintText(White, "Toggling Always Display Items: %s", itemAlwayShowPatch->IsInstalled() ? "Off" : "On");
+		if (itemAlwayShowPatch->IsInstalled())
+			itemAlwayShowPatch->Remove();
+		else
+			itemAlwayShowPatch->Install();
+	}
 	if (key == showPlayer) {
 		*block = true;
 		if (up)
