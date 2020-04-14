@@ -60,7 +60,7 @@ map<std::string, Toggle> Item::Toggles;
 UnitAny* Item::viewingUnit;
 
 Patch* itemNamePatch = new Patch(Call, D2CLIENT, { 0x92366, 0x96736 }, (int)ItemName_Interception, 6);
-Patch* itemAlwayShowPatch = new Patch(NOP, D2CLIENT, { 0xC3D4E, 0x0 }, (int)ItemName_Interception, 8);
+Patch* itemAlwayShowPatch = new Patch(NOP, D2CLIENT, { 0xC3D4E, 0x1D74E }, 0, 8);
 Patch* itemPropertiesPatch = new Patch(Jump, D2CLIENT, { 0x5612C, 0x2E3FC }, (int)GetProperties_Interception, 6);
 Patch* itemPropertyStringDamagePatch = new Patch(Call, D2CLIENT, { 0x55D7B, 0x2E04B }, (int)GetItemPropertyStringDamage_Interception, 5);
 Patch* itemPropertyStringPatch = new Patch(Call, D2CLIENT, { 0x55D9D, 0x2E06D }, (int) GetItemPropertyString_Interception, 5);
