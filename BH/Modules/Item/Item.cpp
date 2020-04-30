@@ -218,7 +218,7 @@ void Item::OnLoop() {
 
 void Item::OnKey(bool up, BYTE key, LPARAM lParam, bool* block) {
 	bool ctrlState = ((GetKeyState(VK_LCONTROL) & 0x80) || (GetKeyState(VK_RCONTROL) & 0x80));
-	if (up && (ctrlState && key == 0x5a || toggleItemDisplay)) {
+	if (up && (ctrlState && key == toggleItemDisplay)) {
 		*block = true;
 		PrintText(White, "Toggling Always Display Items: %s", itemAlwayShowPatch->IsInstalled() ? "Off" : "On");
 		if (itemAlwayShowPatch->IsInstalled())
