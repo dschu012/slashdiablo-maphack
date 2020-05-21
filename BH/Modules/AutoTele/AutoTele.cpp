@@ -79,6 +79,7 @@ void AutoTele::LoadConfig() {
 	BH::config->ReadInt("Other Color", Colors[2]);
 	BH::config->ReadInt("WP Color", Colors[3]);
 	BH::config->ReadInt("Prev Color", Colors[4]);
+	BH::config->ReadInt("Line Width", LineWidth);
 }
 
 void AutoTele::OnAutomapDraw() {
@@ -97,7 +98,7 @@ void AutoTele::OnAutomapDraw() {
 			DrawPath.Add(Pos, 1);
 		}
 		for(int i = 0;i<(DrawPath.GetSize()-1);i++) {
-			Drawing::Linehook::Draw(DrawPath.ElementAt(i).x,DrawPath.ElementAt(i).y,DrawPath.ElementAt(i+1).x, DrawPath.ElementAt(i+1).y, Colors[0]);
+			Drawing::Linehook::Draw(DrawPath.ElementAt(i).x,DrawPath.ElementAt(i).y,DrawPath.ElementAt(i+1).x, DrawPath.ElementAt(i+1).y, Colors[0], LineWidth);
 			Drawing::Crosshook::Draw(DrawPath.ElementAt(i+1).x, DrawPath.ElementAt(i+1).y, Colors[0]);
 		}
 	}
@@ -106,7 +107,7 @@ void AutoTele::OnAutomapDraw() {
 		for(int i = 0;i<5;i++) {
 			if(Vectors[i].x && Vectors[i].y) {
 				Drawing::Hook::ScreenToAutomap(&Pos, Vectors[i].x, Vectors[i].y);
-				Drawing::Linehook::Draw(MyPos.x, MyPos.y, Pos.x, Pos.y, Colors[i+1]);
+				Drawing::Linehook::Draw(MyPos.x, MyPos.y, Pos.x, Pos.y, Colors[i+1], LineWidth);
 				//PrintText(1, "player x %d player y %d", MyPos.x, MyPos.y);
 				Drawing::Crosshook::Draw(Pos.x, Pos.y, Colors[i+1]);
 			}

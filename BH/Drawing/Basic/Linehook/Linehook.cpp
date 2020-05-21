@@ -96,6 +96,15 @@ void Linehook::OnDraw() {
 }
 
 bool Linehook::Draw(unsigned int x, unsigned int y, unsigned int x2, unsigned int y2, unsigned int color) {
-	D2GFX_DrawLine(x,y,x2,y2,color,-1);
+	D2GFX_DrawLine(x, y, x2, y2, color, -1);
+	return true;
+}
+
+bool Linehook::Draw(unsigned int x, unsigned int y, unsigned int x2, unsigned int y2, unsigned int color, unsigned int width) {
+	D2GFX_DrawLine(x, y, x2, y2, color, -1);
+	for (int i = 1; i < width; i++) {
+		D2GFX_DrawLine(x - i, y - i, x2 - i, y2 - i, color, -1);
+		D2GFX_DrawLine(x + i, y + i, x2 + i, y2 + i, color, -1);
+	}
 	return true;
 }

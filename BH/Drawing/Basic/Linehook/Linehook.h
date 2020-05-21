@@ -41,5 +41,6 @@ namespace Drawing {
 
 			//Static line draw
 			static bool Draw(unsigned int x, unsigned int y, unsigned int x2, unsigned int y2, unsigned int color);
+			static bool Draw(unsigned int x, unsigned int y, unsigned int x2, unsigned int y2, unsigned int color, unsigned int width);
 	};
 };
