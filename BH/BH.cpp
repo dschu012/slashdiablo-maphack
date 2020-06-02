@@ -115,6 +115,26 @@ void BH::Initialize()
 		}
 		BH::OldWNDPROC = (WNDPROC)GetWindowLong(D2GFX_GetHwnd(), GWL_WNDPROC);
 		SetWindowLong(D2GFX_GetHwnd(), GWL_WNDPROC, (LONG)GameWindowEvent);
+
+		//Handle Command Line Args
+		LPWSTR *szArglist;
+		int nArgs;
+		int i;
+
+		szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+		for (int i = 0; i < nArgs; i++) {
+			if (!wcscmp(szArglist[i], L"-pos")) {
+				wchar_t* token;
+				int pos[2];
+				token = wcstok(szArglist[i + 1], L",");
+				for (int j = 0; j < 2; j++) {
+					pos[j] = _wtoi(token);
+					token = wcstok(NULL, L",");
+				}
+				SetWindowPos(D2GFX_GetHwnd(), NULL, pos[0], pos[1], 1920, 1080, SWP_NOZORDER | SWP_NOSIZE);
+			}
+		}
+
 	});
 
 	settingsUI = new Drawing::UI(BH_VERSION, 400, 277);
