@@ -2,7 +2,6 @@
 #include "../../BH.h"
 #include "ATIncludes\CMapIncludes.h"
 #include "ATIncludes\Vectors.h"
-#include "../ScreenInfo/ScreenInfo.h"
 
 #define VALIDPTR(x) ( (x) && (!IsBadReadPtr(x,sizeof(x))) )
 
@@ -30,9 +29,6 @@ void AutoTele::OnLoad() {
 
 	new Checkhook(settingsTab, col, (Y += 15),
 			&Toggles["Quest Drop Warning"].state, "Quest Drop Warning");
-
-	new Checkhook(settingsTab, col, (Y += 15),
-			&(ScreenInfo::Toggles)["Center Skill Warning"].state, "Center Skill Warning");
 
 	new Texthook(settingsTab, col+20, (Y += 22), "Game creation");
 	new Checkhook(settingsTab, col, (Y += 15),

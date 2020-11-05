@@ -35,8 +35,6 @@ void ScreenInfo::LoadConfig() {
 
 	BH::config->ReadArray("AutomapInfo", automapInfo);
 
-	BH::config->ReadToggle("Center Skill Warning", "None", false, Toggles["Center Skill Warning"]);
-
 	BH::config->ReadAssoc("Skill Warning", SkillWarnings);
 	SkillWarningMap.clear();
 	for (auto it = SkillWarnings.cbegin(); it != SkillWarnings.cend(); it++) {
@@ -183,13 +181,7 @@ void ScreenInfo::OnDraw() {
 	}
 
 	for (std::deque<StateWarning*>::iterator it = CurrentWarnings.begin(); it != CurrentWarnings.end(); ++it) {
-		unsigned int posX = 400;
-		unsigned int posY = 30 * (yOffset++);
-		if (Toggles["Center Skill Warning"].state) {
-			posX = *p_D2CLIENT_ScreenSizeX / 2;
-			posY = *p_D2CLIENT_ScreenSizeY / 2;
-		}
-		Texthook::Draw(posX, posY, Center, 3, Red, "%s has expired!", (*it)->name.c_str());
+		Texthook::Draw(400, 30 * (yOffset++), Center, 3, Red, "%s has expired!", (*it)->name.c_str());
 	}
 
 	// It's a kludge to peek into other modules for config info, but it just seems silly to
