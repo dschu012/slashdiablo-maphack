@@ -69,6 +69,13 @@ Patch* viewInvPatch1 = new Patch(Call, D2CLIENT, { 0x953E2, 0x997B2 }, (int)View
 Patch* viewInvPatch2 = new Patch(Call, D2CLIENT, { 0x94AB4, 0x98E84 }, (int)ViewInventoryPatch2_ASM, 6);
 Patch* viewInvPatch3 = new Patch(Call, D2CLIENT, { 0x93A6F, 0x97E3F }, (int)ViewInventoryPatch3_ASM, 5);
 
+//ported to 1.13c/d from https://github.com/jieaido/d2hackmap/blob/master/PermShowItem.cpp
+Patch* permShowItems1 = new Patch(Call, D2CLIENT, { 0xC3D4E, 0x0 }, (int)PermShowItemsPatch1_ASM, 6);
+Patch* permShowItems2 = new Patch(Call, D2CLIENT, { 0xC0E9A, 0x0 }, (int)PermShowItemsPatch1_ASM, 6);
+Patch* permShowItems3 = new Patch(Call, D2CLIENT, { 0x59483, 0x0 }, (int)PermShowItemsPatch2_ASM, 6);
+Patch* permShowItems4 = new Patch(Call, D2CLIENT, { 0x5908A, 0x0 }, (int)PermShowItemsPatch3_ASM, 6);
+Patch* permShowItems5 = new Patch(Call, D2CLIENT, { 0xA6BA3, 0x0 }, (int)PermShowItemsPatch4_ASM, 6);
+
 using namespace Drawing;
 
 void Item::OnLoad() {
@@ -77,6 +84,12 @@ void Item::OnLoad() {
 	viewInvPatch1->Install();
 	viewInvPatch2->Install();
 	viewInvPatch3->Install();
+
+	permShowItems1->Install();
+	permShowItems2->Install();
+	permShowItems3->Install();
+	permShowItems4->Install();
+	permShowItems5->Install();
 
 	itemPropertiesPatch->Install();
 	itemPropertyStringDamagePatch->Install();
@@ -162,6 +175,10 @@ void Item::DrawSettings() {
 	new Keyhook(settingsTab, keyhook_x, y+2, &Toggles["Shorten Item Names"].toggle, "");
 	y += 15;
 
+	new Checkhook(settingsTab, 4, y, &Toggles["Always Show Items"].state, "Always Show Items");
+	new Keyhook(settingsTab, keyhook_x, y + 2, &Toggles["Always Show Items"].toggle, "");
+	y += 15;
+
 	new Checkhook(settingsTab, 4, y, &Toggles["Always Show Item Stat Ranges"].state, "Always Show Item Stat Ranges");
 	new Keyhook(settingsTab, keyhook_x, y+2, &Toggles["Always Show Item Stat Ranges"].toggle, "");
 	y += 15;
@@ -223,6 +240,11 @@ void Item::OnUnload() {
 	viewInvPatch1->Remove();
 	viewInvPatch2->Remove();
 	viewInvPatch3->Remove();
+	permShowItems1->Remove();
+	permShowItems2->Remove();
+	permShowItems3->Remove();
+	permShowItems4->Remove();
+	permShowItems5->Remove();
 	ItemDisplay::UninitializeItemRules();
 }
 
@@ -321,17 +343,17 @@ void __fastcall Item::ItemNamePatch(wchar_t *name, UnitAny *item)
 	}
 
 	// Some common color codes for text strings (see TextColor enum):
-	// ÿc; (purple)
-	// ÿc0 (white)
-	// ÿc1 (red)
-	// ÿc2 (green)
-	// ÿc3 (blue)
-	// ÿc4 (gold)
-	// ÿc5 (gray)
-	// ÿc6 (black)
-	// ÿc7 (tan)
-	// ÿc8 (orange)
-	// ÿc9 (yellow)
+	// ï¿½c; (purple)
+	// ï¿½c0 (white)
+	// ï¿½c1 (red)
+	// ï¿½c2 (green)
+	// ï¿½c3 (blue)
+	// ï¿½c4 (gold)
+	// ï¿½c5 (gray)
+	// ï¿½c6 (black)
+	// ï¿½c7 (tan)
+	// ï¿½c8 (orange)
+	// ï¿½c9 (yellow)
 
 	/* Test code to display item codes */
 	//string test3 = test_code;
@@ -350,12 +372,12 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 		// We will also strip ilvls from these items
 		if (code[0] == 't' && code[1] == 's' && code[2] == 'c')  // town portal scroll
 		{
-			itemName = "ÿc2**ÿc0TP";
+			itemName = "ï¿½c2**ï¿½c0TP";
 			displayItemLevel = false;
 		}
 		else if (code[0] == 'i' && code[1] == 's' && code[2] == 'c')  // identify scroll
 		{
-			itemName = "ÿc2**ÿc0ID";
+			itemName = "ï¿½c2**ï¿½c0ID";
 			displayItemLevel = false;
 		}
 		else if (code[0] == 'v' && code[1] == 'p' && code[2] == 's')  // stamina potion
@@ -407,27 +429,27 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 		{
 			if (code[2] == '1')
 			{
-				itemName = "ÿc1**ÿc0Min Heal";
+				itemName = "ï¿½c1**ï¿½c0Min Heal";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '2')
 			{
-				itemName = "ÿc1**ÿc0Lt Heal";
+				itemName = "ï¿½c1**ï¿½c0Lt Heal";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '3')
 			{
-				itemName = "ÿc1**ÿc0Heal";
+				itemName = "ï¿½c1**ï¿½c0Heal";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '4')
 			{
-				itemName = "ÿc1**ÿc0Gt Heal";
+				itemName = "ï¿½c1**ï¿½c0Gt Heal";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '5')
 			{
-				itemName = "ÿc1**ÿc0Sup Heal";
+				itemName = "ï¿½c1**ï¿½c0Sup Heal";
 				displayItemLevel = false;
 			}
 		}
@@ -435,27 +457,27 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 		{
 			if (code[2] == '1')
 			{
-				itemName = "ÿc3**ÿc0Min Mana";
+				itemName = "ï¿½c3**ï¿½c0Min Mana";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '2')
 			{
-				itemName = "ÿc3**ÿc0Lt Mana";
+				itemName = "ï¿½c3**ï¿½c0Lt Mana";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '3')
 			{
-				itemName = "ÿc3**ÿc0Mana";
+				itemName = "ï¿½c3**ï¿½c0Mana";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '4')
 			{
-				itemName = "ÿc3**ÿc0Gt Mana";
+				itemName = "ï¿½c3**ï¿½c0Gt Mana";
 				displayItemLevel = false;
 			}
 			else if (code[2] == '5')
 			{
-				itemName = "ÿc3**ÿc0Sup Mana";
+				itemName = "ï¿½c3**ï¿½c0Sup Mana";
 				displayItemLevel = false;
 			}
 		}
@@ -463,12 +485,12 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 		{
 			if (code[2] == 's')
 			{
-				itemName = "ÿc;**ÿc0Rejuv";
+				itemName = "ï¿½c;**ï¿½c0Rejuv";
 				displayItemLevel = false;
 			}
 			else if (code[2] == 'l')
 			{
-				itemName = "ÿc;**ÿc0Full";
+				itemName = "ï¿½c;**ï¿½c0Full";
 				displayItemLevel = false;
 			}
 		}
@@ -564,13 +586,13 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 		//if( (code[0] == 'g' && code[1] == 'l'					) ||
 		//	(code[0] == 's' && code[1] == 'k' && code[2] == 'l' ) )
 		//{
-		//	itemName = "ÿc:" + itemName;
+		//	itemName = "ï¿½c:" + itemName;
 		//}
 		///*Perfect Gems*/
 		//if( (code[0] == 'g' && code[1] == 'p'                   ) ||
 		//	(code[0] == 's' && code[1] == 'k' && code[2] == 'p' ) )
 		//{
-		//	itemName = "ÿc<" + itemName;
+		//	itemName = "ï¿½c<" + itemName;
 		//}
 		/*Ethereal*/
 		if( item->pItemData->dwFlags & 0x400000 )
@@ -579,7 +601,7 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 			if( (code[0] == 'u'                                    ) ||
 				(code[0] == 'p' && code[1] == 'a' && code[2] >= 'b') )
 			{
-				itemName = "ÿc;" + itemName;
+				itemName = "ï¿½c;" + itemName;
 			}
 		}
 		/*Runes*/
@@ -587,33 +609,33 @@ void Item::OrigGetItemName(UnitAny *item, string &itemName, char *code)
 		{
 			if( code[1] == '0' )
 			{
-				itemName = "ÿc0" + itemName;
+				itemName = "ï¿½c0" + itemName;
 			}
 			else if( code[1] == '1' )
 			{
 				if( code[2] <= '6')
 				{
-					itemName = "ÿc4" + itemName;
+					itemName = "ï¿½c4" + itemName;
 				}
 				else
 				{
-					itemName = "ÿc8" + itemName;
+					itemName = "ï¿½c8" + itemName;
 				}
 			}
 			else if( code[1] == '2' )
 			{
 				if( code[2] <= '2' )
 				{
-					itemName = "ÿc8" + itemName;
+					itemName = "ï¿½c8" + itemName;
 				}
 				else
 				{
-					itemName = "ÿc1" + itemName;
+					itemName = "ï¿½c1" + itemName;
 				}
 			}
 			else if( code[1] == '3' )
 			{
-				itemName = "ÿc1" + itemName;
+				itemName = "ï¿½c1" + itemName;
 			}
 		}
 	}
@@ -1275,5 +1297,78 @@ void __declspec(naked) ViewInventoryPatch3_ASM()
 		mov ecx, dword ptr [edi + 0x60];
 
 		ret;
+	}
+}
+
+
+//seems to force alt to be down
+BOOL Item::PermShowItemsPatch1()
+{
+	return Toggles["Always Show Items"].state || D2CLIENT_GetUIState(UI_GROUND_ITEMS);
+}
+
+//these two seem to deal w/ fixing the inv/waypoints when alt is down
+BOOL Item::PermShowItemsPatch2() {
+	return Toggles["Always Show Items"].state || D2CLIENT_GetUIState(UI_GROUND_ITEMS);
+}
+
+BOOL Item::PermShowItemsPatch3() {
+	return Toggles["Always Show Items"].state || D2CLIENT_GetUIState(UI_GROUND_ITEMS);
+}
+
+
+void __declspec(naked) PermShowItemsPatch1_ASM()
+{
+	__asm {
+		call Item::PermShowItemsPatch1
+		test eax, eax
+		ret
+	}
+}
+
+
+void __declspec(naked) PermShowItemsPatch2_ASM()
+{
+	__asm {
+		call Item::PermShowItemsPatch2
+		test eax, eax
+		je orgcode
+		ret
+		orgcode :
+		mov eax, dword ptr[esp + 0x20]
+			test eax, eax
+			ret
+	}
+}
+
+
+void __declspec(naked) PermShowItemsPatch3_ASM()
+{
+	__asm {
+		push ebp
+		push esi
+		call Item::PermShowItemsPatch3
+		test eax, eax
+		pop esi
+		pop ebp
+		jz 	outcode
+		cmp ebp, 0x20
+		jge outcode
+		ret
+		outcode :
+		add dword ptr[esp], 0x38A  //to 6FB0DD89
+			ret
+	}
+}
+
+
+void __declspec(naked) PermShowItemsPatch4_ASM()
+{
+	__asm {
+		push eax
+		call Item::PermShowItemsPatch1
+		mov ecx, eax
+		pop eax
+		ret
 	}
 }
