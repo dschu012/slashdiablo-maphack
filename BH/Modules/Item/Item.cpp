@@ -70,11 +70,11 @@ Patch* viewInvPatch2 = new Patch(Call, D2CLIENT, { 0x94AB4, 0x98E84 }, (int)View
 Patch* viewInvPatch3 = new Patch(Call, D2CLIENT, { 0x93A6F, 0x97E3F }, (int)ViewInventoryPatch3_ASM, 5);
 
 //ported to 1.13c/d from https://github.com/jieaido/d2hackmap/blob/master/PermShowItem.cpp
-Patch* permShowItems1 = new Patch(Call, D2CLIENT, { 0xC3D4E, 0x0 }, (int)PermShowItemsPatch1_ASM, 6);
-Patch* permShowItems2 = new Patch(Call, D2CLIENT, { 0xC0E9A, 0x0 }, (int)PermShowItemsPatch1_ASM, 6);
-Patch* permShowItems3 = new Patch(Call, D2CLIENT, { 0x59483, 0x0 }, (int)PermShowItemsPatch2_ASM, 6);
-Patch* permShowItems4 = new Patch(Call, D2CLIENT, { 0x5908A, 0x0 }, (int)PermShowItemsPatch3_ASM, 6);
-Patch* permShowItems5 = new Patch(Call, D2CLIENT, { 0xA6BA3, 0x0 }, (int)PermShowItemsPatch4_ASM, 6);
+Patch* permShowItems1 = new Patch(Call, D2CLIENT, { 0xC3D4E, 0x1D74E }, (int)PermShowItemsPatch1_ASM, 6);
+Patch* permShowItems2 = new Patch(Call, D2CLIENT, { 0xC0E9A, 0x1A89A }, (int)PermShowItemsPatch1_ASM, 6);
+Patch* permShowItems3 = new Patch(Call, D2CLIENT, { 0x59483, 0x4EA13 }, (int)PermShowItemsPatch2_ASM, 6);
+Patch* permShowItems4 = new Patch(Call, D2CLIENT, { 0x5908A, 0x4E61A }, (int)PermShowItemsPatch3_ASM, 6);
+Patch* permShowItems5 = new Patch(Call, D2CLIENT, { 0xA6BA3, 0x63443 }, (int)PermShowItemsPatch4_ASM, 6);
 
 using namespace Drawing;
 
