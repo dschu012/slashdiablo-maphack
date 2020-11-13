@@ -253,6 +253,17 @@ void ScreenInfo::OnDraw() {
 	}
 }
 
+DWORD ScreenInfo::GetPlayerArea() {
+	if (VALIDPTR(D2CLIENT_GetPlayerUnit())) {
+		if (VALIDPTR(D2CLIENT_GetPlayerUnit()->pPath))
+			if (VALIDPTR(D2CLIENT_GetPlayerUnit()->pPath->pRoom1))
+				if (VALIDPTR(D2CLIENT_GetPlayerUnit()->pPath->pRoom1->pRoom2))
+					if (VALIDPTR(D2CLIENT_GetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel))
+						return D2CLIENT_GetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
+	}
+	return 0;
+}
+
 void ScreenInfo::FormattedXPPerSec(char* buffer, double xpPerSec) {
 	char* unit = "";
 	if (xpPerSec > 1E9) {
