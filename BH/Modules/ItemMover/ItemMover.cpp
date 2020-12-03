@@ -595,6 +595,7 @@ void ItemMover::OnGamePacketRecv(BYTE* packet, bool* block) {
 				if ((item.action == ITEM_ACTION_NEW_GROUND || item.action == ITEM_ACTION_OLD_GROUND) && success) {
 					bool showOnMap = false;
 					bool nameWhitelisted = false;
+					bool noTracking = false;
 					auto color = UNDEFINED_COLOR;
 
 					for (vector<Rule*>::iterator it = MapRuleList.begin(); it != MapRuleList.end(); it++) {
@@ -607,6 +608,7 @@ void ItemMover::OnGamePacketRecv(BYTE* packet, bool* block) {
 							if (action_color != UNDEFINED_COLOR && (action_color != DEAD_COLOR || color == UNDEFINED_COLOR))
 								color = action_color;
 							showOnMap = true;
+							noTracking = (*it)->action.noTracking;
 							// break unless %CONTINUE% is used
 							if ((*it)->action.stopProcessing) break;
 						}
@@ -620,7 +622,9 @@ void ItemMover::OnGamePacketRecv(BYTE* packet, bool* block) {
 					}
 					//PrintText(1, "Item on ground: %s, %s, %s, %X", item.name.c_str(), item.code, item.attrs->category.c_str(), item.attrs->flags);
 					if(showOnMap && !(*BH::MiscToggles2)["Item Detailed Notifications"].state) {
-						ScreenInfo::AddDrop(item.name, item.x, item.y);
+						if (!noTracking && !IsTown(GetPlayerArea())) {
+							ScreenInfo::AddDrop(item.name, item.x, item.y);
+						}
 						if (color == UNDEFINED_COLOR) {
 							color = ItemColorFromQuality(item.quality);
 						}

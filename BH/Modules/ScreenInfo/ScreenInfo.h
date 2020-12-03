@@ -57,6 +57,7 @@ class ScreenInfo : public Module {
 		string szColumnData;
 
 		map<string, string> automap;
+		vector<pair<string, string>> runDetailsColumns;
 
 		DWORD GetPlayerArea();
 		void FormattedXPPerSec(char* buffer, double xpPerSec);
