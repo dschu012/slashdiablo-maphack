@@ -59,6 +59,7 @@ class Item : public Module {
 		Drawing::UITab* settingsTab;
 		static unsigned int filterLevelSetting;
 		static unsigned int pingLevelSetting;
+		static unsigned int trackerPingLevelSetting;
 	public:
 
 		Item() : Module("Item") {};
@@ -90,6 +91,7 @@ class Item : public Module {
 
 		static unsigned int GetFilterLevel() { return filterLevelSetting; }
 		static unsigned int GetPingLevel() { return pingLevelSetting; }
+		static unsigned int GetTrackerPingLevel() { return trackerPingLevelSetting >= 0 ? trackerPingLevelSetting : pingLevelSetting; }
 
 };
 
