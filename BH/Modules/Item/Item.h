@@ -60,6 +60,8 @@ class Item : public Module {
 		static unsigned int filterLevelSetting;
 		static unsigned int pingLevelSetting;
 		static unsigned int trackerPingLevelSetting;
+
+		void ResetPatches();
 	public:
 
 		Item() : Module("Item") {};
