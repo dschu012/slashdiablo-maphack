@@ -104,6 +104,14 @@ void ScreenInfo::OnGameJoin() {
 		}
 	}
 
+	if (bFailedToWrite) {
+		bFailedToWrite = false;
+		string path = ReplaceAutomapTokens(szSavePath);
+		for(int i = 0; i < 5; i++) {
+			PrintText(Red, "FILE \"%s\" IS LOCKED BY ANOTHER PROCESS! LAST RUN DATA WAS NOT SAVED!", ReplaceAutomapTokens(szSavePath));
+		}
+	}
+
 	gameTimer = GetTickCount();
 	UnitAny* pUnit = D2CLIENT_GetPlayerUnit();
 	startExperience = (int)D2COMMON_GetUnitStat(pUnit, STAT_EXP, 0);
@@ -401,10 +409,10 @@ void ScreenInfo::OnAutomapDraw() {
 }
 
 void ScreenInfo::AddDrop(UnitAny* pItem) {
-	ScreenInfo::AddDrop(GetItemName(pItem), pItem->pPath->xPos, pItem->pPath->yPos);
+	ScreenInfo::AddDrop(GetItemName(pItem), pItem->pItemPath->dwPosX, pItem->pItemPath->dwPosY);
 }
 
-void ScreenInfo::AddDrop(const string& name, int x, int y) {
+void ScreenInfo::AddDrop(const string& name, unsigned int x, unsigned int y) {
 	size_t h = 0;
 	hash_combine(h, hash<string>{}(name));
 	hash_combine(h, hash<long>{}(x << 8 | y));
@@ -553,6 +561,10 @@ void ScreenInfo::WriteRunTrackerData() {
 
 	std::ofstream os;
 	os.open(path, std::ios_base::app);
+	if (os.fail()) {
+		bFailedToWrite = true;
+		return;
+	}
 	if (!exist) {
 		os << ReplaceAutomapTokens(szColumnHeader) << endl; 
 	}
