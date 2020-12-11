@@ -27,6 +27,7 @@ class ScreenInfo : public Module {
 		Drawing::Texthook* mpqVersionText;
 		Drawing::Texthook* d2VersionText;
 		DWORD gameTimer;
+		DWORD endTimer;
 
 		int packetRequests;
 		ULONGLONG warningTicks;
@@ -58,9 +59,11 @@ class ScreenInfo : public Module {
 		string szColumnData;
 
 		map<string, string> automap;
+		map<string, int> runcounter;
 		vector<pair<string, string>> runDetailsColumns;
 
 		DWORD GetPlayerArea();
+		string SimpleGameName(const string& gameName);
 		void FormattedXPPerSec(char* buffer, double xpPerSec);
 		string FormatTime(time_t t, const char* format);
 	public:

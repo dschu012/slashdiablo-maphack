@@ -55,6 +55,7 @@ void ScreenInfo::LoadConfig() {
 
 	BH::config->ReadArray("AutomapInfo", automapInfo);
 	
+	BH::config->ReadToggle("Run Details On Join", "None", false, Toggles["Run Details On Join"]);
 	BH::config->ReadToggle("Save Run Details", "None", false, Toggles["Save Run Details"]);
 	BH::config->ReadString("Save Run Details Location", szSavePath);
 
@@ -140,12 +141,34 @@ void ScreenInfo::OnGameJoin() {
 	automap["CHARXPPERCENT"] = to_string(startPctExp);
 	automap["CHARXP"] = to_string(startExperience);
 	automap["GAMENAME"] = pData->szGameName;
+	string runname = SimpleGameName(pData->szGameName);
+	automap["RUNNAME"] = runname;
+	if (runcounter.find(runname) == runcounter.end()) {
+		runcounter[runname] = 0;
+	}
+	runcounter[runname]++;
 	automap["GAMEPASS"] = pData->szGamePass;
 	automap["GAMEDESC"] = pData->szGameDesc;
 	automap["GAMEIP"] = pData->szGameIP;
 	automap["GAMEDIFF"] = szDiff[D2CLIENT_GetDifficulty()];
 	automap["ACCOUNTNAME"] = pData->szAccountName;
 	automap["CHARNAME"] = pUnit->pPlayerData->szName;
+	automap["SESSIONGAMECOUNT"] = to_string(++nTotalGames);
+	if (!Toggles["Run Details On Join"].state) {
+		return;
+	}
+	PrintText(Orange, "%d games played this session.", nTotalGames);
+	if (runname.length() > 0) {
+		PrintText(Orange, "%d \"%s\" runs this session.", runcounter[runname], runname.c_str());
+	}
+}
+
+string ScreenInfo::SimpleGameName(const string& gameName) {
+	std::smatch match;
+	if (regex_search(gameName, match, regex("^(.*?)(\\d+)$")) && match.size() == 3) {
+		return match.format("$1");
+	}
+	return gameName;
 }
 
 string ScreenInfo::FormatTime(time_t t, const char* format) {
@@ -298,7 +321,7 @@ void ScreenInfo::OnDraw() {
 	currentExperience = (int)D2COMMON_GetUnitStat(pUnit, STAT_EXP, 0);
 	currentLevel = (int)D2COMMON_GetUnitStat(pUnit, STAT_LEVEL, 0);
 
-	int nTime = ((GetTickCount() - gameTimer) / 1000);
+	endTimer = ((GetTickCount() - gameTimer) / 1000);
 	if (startLevel == 0) { startLevel = currentLevel; }
 
 	char sExp[255] = { 0 };
@@ -308,7 +331,7 @@ void ScreenInfo::OnDraw() {
 	if (currentLevel > startLevel) {
 		currentExpGainPct = (100 - oldPctExp) + pExp + ((currentLevel - startLevel) - 1) * 100;
 	}
-	currentExpPerSecond = nTime > 0 ? (currentExperience - startExperience) / (double)nTime : 0;
+	currentExpPerSecond = endTimer > 0 ? (currentExperience - startExperience) / (double)endTimer : 0;
 	char xpPerSec[32];
 	FormattedXPPerSec(xpPerSec, currentExpPerSecond);
 
@@ -319,7 +342,7 @@ void ScreenInfo::OnDraw() {
 
 	
 	char gameTime[20];
-	sprintf_s(gameTime, 20, "%.2d:%.2d:%.2d", nTime / 3600, (nTime / 60) % 60, nTime % 60);
+	sprintf_s(gameTime, 20, "%.2d:%.2d:%.2d", endTimer / 3600, (endTimer / 60) % 60, endTimer % 60);
 
 	time_t tTime;
 	time(&tTime);
@@ -496,7 +519,7 @@ void ScreenInfo::OnGameExit() {
 	double gamesToLevel = (ExpByLevel[currentLevel] - currentExperience) / (1.0 * xpGained);
 	double lastExpGainPct = currentExpGainPct;
 	double lastExpPerSecond = currentExpPerSecond;
-	int lastGameLength = ((GetTickCount() - gameTimer) / 1000);
+	int lastGameLength = endTimer;
 	int timeToLevel = gamesToLevel * lastGameLength;
 
 	char buffer[128];
@@ -533,7 +556,6 @@ void ScreenInfo::OnGameExit() {
 	automap["LASTXPPERSECLONG"] = to_string(lastExpPerSecond);
 	automap["LASTGAMETIME"] = szLastGameTime;
 	automap["LASTGAMETIMESEC"] = to_string(lastGameLength);
-	automap["SESSIONGAMECOUNT"] = to_string(++nTotalGames);
 	automap["DROPS"] = regex_replace(drops, regex("\xFF" "c."), "");
 
 	MephistoBlocked = false;
