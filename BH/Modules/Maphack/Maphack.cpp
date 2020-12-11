@@ -158,6 +158,7 @@ void Maphack::ReadConfig() {
 	BH::config->ReadToggle("Apply CPU Patch", "None", true, Toggles["Apply CPU Patch"]);
 	BH::config->ReadToggle("Apply FPS Patch", "None", true, Toggles["Apply FPS Patch"]);
 	BH::config->ReadToggle("Skip NPC Quest Messages", "None", true, Toggles["Skip NPC Quest Messages"]);
+	BH::config->ReadToggle("Show Automap On Join", "None", false, Toggles["Show Automap On Join"]);
 
 	BH::config->ReadInt("Minimap Max Ghost", automapDraw.maxGhost);
 }
@@ -275,6 +276,9 @@ void Maphack::OnLoad() {
 
 	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Skip NPC Quest Messages"].state, "Skip NPC Quest Messages");
 	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Skip NPC Quest Messages"].toggle, "");
+	
+	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Show Automap On Join"].state, "Show Automap On Join");
+	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Show Automap On Join"].toggle, "");
 
 	new Texthook(settingsTab, col2_x + 5, 3, "Missile Colors");
 
@@ -679,6 +683,7 @@ void Maphack::OnAutomapDraw() {
 void Maphack::OnGameJoin() {
 	ResetRevealed();
 	automapLevels.clear();
+	*p_D2CLIENT_AutomapOn = Toggles["Show Automap On Join"].state;
 }
 
 void Squelch(DWORD Id, BYTE button) {
