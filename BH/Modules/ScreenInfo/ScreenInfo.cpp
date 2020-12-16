@@ -51,6 +51,15 @@ void ScreenInfo::OnLoad() {
 }
 
 void ScreenInfo::LoadConfig() {
+	cRunData = new Config("Run.dat");
+	if (!cRunData->Parse()) {
+		cRunData->SetConfigName("Run.dat");
+		std::ofstream os;
+		os.open(cRunData->GetConfigName(), std::ios_base::out);
+		os << endl;
+		os.close();
+	}
+
 	BH::config->ReadToggle("Experience Meter", "VK_NUMPAD7", false, Toggles["Experience Meter"]);
 
 	BH::config->ReadArray("AutomapInfo", automapInfo);
@@ -93,7 +102,7 @@ void ScreenInfo::MpqLoaded() {
 
 void ScreenInfo::OnGameJoin() {
 	BnetData* pInfo = (*p_D2LAUNCH_BnData);
-	UnitAny *unit = D2CLIENT_GetPlayerUnit();
+	UnitAny* unit = D2CLIENT_GetPlayerUnit();
 	if (unit) {
 		std::string title = (std::string)"Diablo II - ";
 		if (strlen(pInfo->szAccountName) > 0) {
@@ -108,7 +117,7 @@ void ScreenInfo::OnGameJoin() {
 	if (bFailedToWrite) {
 		bFailedToWrite = false;
 		string path = ReplaceAutomapTokens(szSavePath);
-		for(int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			PrintText(Red, "FILE \"%s\" IS LOCKED BY ANOTHER PROCESS! LAST RUN DATA WAS NOT SAVED!", ReplaceAutomapTokens(szSavePath));
 		}
 	}
@@ -134,7 +143,9 @@ void ScreenInfo::OnGameJoin() {
 
 	time_t t
 		= chrono::system_clock::to_time_t(chrono::system_clock::now());
-	
+
+	string path = ReplaceAutomapTokens(szSavePath);
+
 	automap["JOINDATE"] = FormatTime(t, "%F");
 	automap["JOINTIME"] = FormatTime(t, "%T%z");
 	automap["CHARLEVEL"] = to_string(startLevel);
@@ -147,7 +158,16 @@ void ScreenInfo::OnGameJoin() {
 	if (runcounter.find(runname) == runcounter.end()) {
 		runcounter[runname] = 0;
 	}
-	runcounter[runname]++;
+	cRunData->ReadAssoc(pUnit->pPlayerData->szName, runs);
+	if (runs.find(runname) == runs.end()) {
+		runs[runname] = 0;
+		std::ofstream os;
+		os.open(cRunData->GetConfigName(), std::ios_base::app);
+		os << pUnit->pPlayerData->szName << "[" << runname << "]: 0" << endl;
+		os.close();
+		cRunData->Parse();
+	}
+	runcounter[runname]++, runs[runname]++;
 	automap["GAMEPASS"] = pData->szGamePass;
 	automap["GAMEDESC"] = pData->szGameDesc;
 	automap["GAMEIP"] = pData->szGameIP;
@@ -155,12 +175,14 @@ void ScreenInfo::OnGameJoin() {
 	automap["ACCOUNTNAME"] = pData->szAccountName;
 	automap["CHARNAME"] = pUnit->pPlayerData->szName;
 	automap["SESSIONGAMECOUNT"] = to_string(++nTotalGames);
+
 	if (!Toggles["Run Details On Join"].state) {
 		return;
 	}
 	PrintText(Orange, "%d games played this session.", nTotalGames);
 	if (runname.length() > 0) {
 		PrintText(Orange, "%d \"%s\" games played this session.", runcounter[runname], runname.c_str());
+		PrintText(Orange, "%d \"%s\" games played total.", runs[runname], runname.c_str());
 	}
 }
 
@@ -582,6 +604,7 @@ void ScreenInfo::OnGameExit() {
 	if (Toggles["Save Run Details"].state) {
 		WriteRunTrackerData();
 	}
+	cRunData->Write();
 }
 
 void ScreenInfo::WriteRunTrackerData() {
