@@ -138,8 +138,9 @@ struct AutoMagicTxt
 struct UniqueItemsTxt
 {
 	WORD _1;	                  //0x00
-	char szName[34];              //0x02
-	DWORD dwVersion;              //0x24
+	char szName[32];              //0x02
+	WORD wTblIndex;              //0x22
+	DWORD wVersion;              //0x24
 	union
 	{
 		DWORD dwCode;
@@ -166,13 +167,14 @@ struct SetItemsTxt
 	WORD wSetItemId;               //0x00
 	char szName[32];               //0x02
 	WORD _1;	                   //0x22
-	DWORD dwTblIndex;              //0x24
+	WORD wTblIndex;              //0x24
+	WORD _2;              //0x24
 	union
 	{
 		DWORD dwCode;
 		char szCode[4];
 	};							   //0x28
-	DWORD _2;	                   //0x2C
+	DWORD _3;	                   //0x2C
 	WORD wLvl;                     //0x30
 	WORD wLvlReq;                  //0x32
 	DWORD dwRarity;                //0x34
@@ -188,6 +190,22 @@ struct SetItemsTxt
 	BYTE nAddFunc;                 //0x87
 	ItemsTxtStat hStats[9];        //0x88
 	ItemsTxtStat hGreenStats[10];   //0x118
+};
+
+struct SetsTxt
+{
+	WORD wSetId;						//0x00
+	WORD wStringId;						//0x02
+	WORD wVersion;						//0x04
+	WORD pad0x06;						//0x06
+	DWORD unk0x08;						//0x08
+	DWORD nSetItems;						//0x0C
+	ItemsTxtStat pBoni2[2];				//0x10
+	ItemsTxtStat pBoni3[2];				//0x30
+	ItemsTxtStat pBoni4[2];				//0x50
+	ItemsTxtStat pBoni5[2];				//0x70
+	ItemsTxtStat pFBoni[8];				//0x90
+	SetItemsTxt* pSetItem[6];				//0x110
 };
 
 struct RunesTxt
@@ -1360,6 +1378,32 @@ struct SkillDescTxt
 	DWORD dwDescCalcB[17];            //0xDC
 };
 
+struct TxtLinkNodeStrc
+{
+	char szText[32];				//0x00
+	int nLinkIndex;					//0x20
+	TxtLinkNodeStrc* pPrevious;	//0x24
+	TxtLinkNodeStrc* pNext;		//0x28
+};
+
+struct TxtLinkTblStrc
+{
+	union
+	{
+		char szCode[4];				//0x00
+		DWORD dwCode;			//0x00
+	};
+	int nLinkIndex;					//0x04
+};
+
+struct TxtLinkStrc
+{
+	DWORD nRecords;				//0x00
+	DWORD nAllocatedCells;		//0x04
+	TxtLinkTblStrc* pTbl;			//0x08
+	TxtLinkNodeStrc* pFirstNode;	//0x0C
+};
+
 #pragma pack(pop)
 
 struct ItemsTxt //size = 0x1A8, Valid for Weapons, Armors, Misc.txts
@@ -1372,9 +1416,9 @@ struct ItemsTxt //size = 0x1A8, Valid for Weapons, Armors, Misc.txts
 		DWORD	dwcode;					//0x80
 		char	szcode[4];				//0x80
 	};
-	DWORD	dwnormcode;				//0x84
-	DWORD	dwubercode;				//0x88
-	DWORD	dwultracode;			//0x8C
+	char	sznormcode[4];				//0x84
+	char	szubercode[4];				//0x88
+	char	szultracode[4];			//0x8C
 	char	szalternategfx[4];			//0x90
 	DWORD	dwpSpell;				//0x94
 	WORD	wstate;					//0x98
@@ -1687,8 +1731,8 @@ struct sgptDataTable {
 	DWORD	dwOverlayRecs;			//0xBC0
 	CharStatsTxt*	pCharStatsTxt;	//0xBC4
 	DWORD	dwCharsStatsRecs;		//0xBC8
-	ItemStatCostTxt*pItemStatCostTxt;//0xBCC
-	BYTE*	pItemStatCost;			//0xBD0
+	ItemStatCostTxt*pItemStatCostTxt;	//0xBCC
+	TxtLinkStrc*	pItemStatCostLink;	//0xBD0
 	DWORD	dwItemStatCostRecs;		//0xBD4
 	BYTE*	pOpStatNesting;			//0xBD8
 	DWORD	dwOpStatNestingRecs;	//0xBDC
@@ -1703,7 +1747,7 @@ struct sgptDataTable {
 	DWORD	dwItemsTypeNesting;		//0xC00
 	BYTE*	pItemsTypeNesting;		//0xC04
 	BYTE*	pSets;					//0xC08
-	BYTE*	pSetsTxt;				//0xC0C
+	SetsTxt*	pSetsTxt;				//0xC0C
 	DWORD	dwSetsRecs;				//0xC10
 	BYTE*	pSetItems;				//0xC14
 	SetItemsTxt* pSetItemsTxt;		//0xC18
