@@ -79,6 +79,10 @@ bool Patch::Install() {
 			code[1] = function;
 		}
 	}
+	
+	if (type == Byte) {
+		code[0] = (BYTE)function;
+	}
 
 	//Write the patch in
 	VirtualProtect((VOID*)address, length, PAGE_EXECUTE_READWRITE, &protect);

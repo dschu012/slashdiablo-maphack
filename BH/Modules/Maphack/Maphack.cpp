@@ -31,6 +31,9 @@ Patch* skipNpcMessages2 = new Patch(Call, D2CLIENT, { 0x48BD6, 0x7B4C6 }, (int)N
 Patch* skipNpcMessages3 = new Patch(Call, D2CLIENT, { 0x4819F, 0x7A9CF }, (int)NPCQuestMessageEndPatch2_ASM, 5);
 Patch* skipNpcMessages4 = new Patch(Call, D2CLIENT, { 0x7E9B7, 0x77737 }, (int)NPCMessageLoopPatch_ASM, 6);
 
+Patch* minimapOffsetX = new Patch(Byte, D2CLIENT, { 0x60d39, 0x0 }, 0x3D, 1); //0x28 is default value
+Patch* minimapOffsetY = new Patch(Byte, D2CLIENT, { 0x60d3d, 0x0 }, 0xF, 1); //0xF is default value
+
 
 static BOOL fSkipMessageReq = 0;
 static DWORD mSkipMessageTimer = 0;
@@ -174,6 +177,7 @@ void Maphack::ReadConfig() {
 	BH::config->ReadToggle("Apply FPS Patch", "None", true, Toggles["Apply FPS Patch"]);
 	BH::config->ReadToggle("Show Automap On Join", "None", false, Toggles["Show Automap On Join"]);
 	BH::config->ReadToggle("Skip NPC Quest Messages", "None", true, Toggles["Skip NPC Quest Messages"]);
+	BH::config->ReadToggle("Minimap HD Fix", "None", true, Toggles["Minimap HD Fix"]);
 
 	BH::config->ReadToggle("Show Normal Monsters", "None", true, Toggles["Show Normal Monsters"]);
 	BH::config->ReadInt("Minimap Max Ghost", automapDraw.maxGhost);
@@ -238,6 +242,15 @@ void Maphack::ResetPatches() {
 		skipNpcMessages3->Remove();
 		skipNpcMessages4->Remove();
 	}
+
+	if (Toggles["Minimap HD Fix"].state) {
+		minimapOffsetX->Install();
+		minimapOffsetY->Install();
+	}
+	else {
+		minimapOffsetX->Remove();
+		minimapOffsetY->Remove();
+	}
 }
 
 void Maphack::OnLoad() {
@@ -299,6 +312,9 @@ void Maphack::OnLoad() {
 	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Skip NPC Quest Messages"].state, "Skip NPC Quest Messages");
 	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Skip NPC Quest Messages"].toggle, "");
 
+	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Minimap HD Fix"].state, "Minimap HD Fix");
+	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Minimap HD Fix"].toggle, "");
+
 	new Texthook(settingsTab, col2_x + 5, 3, "Missile Colors");
 
 	new Colorhook(settingsTab, col2_x, 17, &missileColors["Player"], "Player");
@@ -354,6 +370,8 @@ void Maphack::OnUnload() {
 	skipNpcMessages3->Remove();
 	skipNpcMessages4->Remove();
 	diabloDeadMessage->Remove();
+	minimapOffsetX->Remove();
+	minimapOffsetY->Remove();
 }
 
 void Maphack::OnLoop() {
