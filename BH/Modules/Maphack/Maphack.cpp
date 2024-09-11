@@ -31,6 +31,9 @@ Patch* skipNpcMessages2 = new Patch(Call, D2CLIENT, { 0x48BD6, 0x7B4C6 }, (int)N
 Patch* skipNpcMessages3 = new Patch(Call, D2CLIENT, { 0x4819F, 0x7A9CF }, (int)NPCQuestMessageEndPatch2_ASM, 5);
 Patch* skipNpcMessages4 = new Patch(Call, D2CLIENT, { 0x7E9B7, 0x77737 }, (int)NPCMessageLoopPatch_ASM, 6);
 
+Patch* minimapOffsetXPatch = new Patch(Byte, D2CLIENT, { 0x60d39, 0x718b9 }, 0x28, 1); //0x28 is default value
+Patch* minimapOffsetYPatch = new Patch(Byte, D2CLIENT, { 0x60d3d, 0x718bd }, 0xF, 1); //0xF is default value
+
 
 static BOOL fSkipMessageReq = 0;
 static DWORD mSkipMessageTimer = 0;
@@ -50,6 +53,11 @@ Maphack::Maphack() : Module("Maphack") {
 	monsterColors["Champion"] = 0x91;
 	monsterColors["Boss"] = 0x84;
 
+	minimapOffsetX["640x480"] = 0x28;
+	minimapOffsetX["800x600"] = 0x2D;
+	minimapOffsetX["856x480"] = 0x32;
+	minimapOffsetX["1068x600"] = 0x3D;
+
 	monsterResistanceThreshold = 99;
 	lkLinesColor = 105;
 
@@ -68,6 +76,8 @@ void Maphack::LoadConfig() {
 
 void Maphack::ReadConfig() {
 	BH::config->ReadInt("Reveal Mode", revealType);
+	BH::config->ReadAssoc("Minimap Offset X", minimapOffsetX);
+	BH::config->ReadAssoc("Minimap Offset Y", minimapOffsetY);
 	BH::config->ReadInt("Show Monster Resistance", monsterResistanceThreshold);
 	BH::config->ReadInt("LK Chest Lines", lkLinesColor);
 
@@ -174,9 +184,12 @@ void Maphack::ReadConfig() {
 	BH::config->ReadToggle("Apply FPS Patch", "None", true, Toggles["Apply FPS Patch"]);
 	BH::config->ReadToggle("Show Automap On Join", "None", false, Toggles["Show Automap On Join"]);
 	BH::config->ReadToggle("Skip NPC Quest Messages", "None", true, Toggles["Skip NPC Quest Messages"]);
+	BH::config->ReadToggle("Minimap HD Fix", "None", true, Toggles["Minimap HD Fix"]);
 
 	BH::config->ReadToggle("Show Normal Monsters", "None", true, Toggles["Show Normal Monsters"]);
 	BH::config->ReadInt("Minimap Max Ghost", automapDraw.maxGhost);
+
+	UpdateMinimapSettings();
 }
 
 void Maphack::ResetRevealed() {
@@ -185,6 +198,20 @@ void Maphack::ResetRevealed() {
 		revealedAct[act] = false;
 	for (int level = 0; level < 255; level++)
 		revealedLevel[level] = false;
+}
+
+void Maphack::UpdateMinimapSettings() {
+	char resolution[128];
+	prevScreenSizeX = *p_D2CLIENT_ScreenSizeX;
+	prevScreenSizeY = *p_D2CLIENT_ScreenSizeY;
+	sprintf_s(resolution, "%dx%d", *p_D2CLIENT_ScreenSizeX, *p_D2CLIENT_ScreenSizeY);
+	minimapOffsetXPatch->SetFunction(minimapOffsetX.count(resolution) > 0 ? minimapOffsetX[resolution] : 0x28);
+	minimapOffsetYPatch->SetFunction(minimapOffsetY.count(resolution) > 0 ? minimapOffsetY[resolution] : 0xF);
+	
+	// Refreshes the patch so it will reinstall with new values on a config reload.
+	minimapOffsetXPatch->Remove();
+	minimapOffsetYPatch->Remove();
+
 }
 
 void Maphack::ResetPatches() {
@@ -237,6 +264,15 @@ void Maphack::ResetPatches() {
 		skipNpcMessages2->Remove();
 		skipNpcMessages3->Remove();
 		skipNpcMessages4->Remove();
+	}
+
+	if (Toggles["Minimap HD Fix"].state) {
+		minimapOffsetXPatch->Install();
+		minimapOffsetYPatch->Install();
+	}
+	else {
+		minimapOffsetXPatch->Remove();
+		minimapOffsetYPatch->Remove();
 	}
 }
 
@@ -299,6 +335,9 @@ void Maphack::OnLoad() {
 	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Skip NPC Quest Messages"].state, "Skip NPC Quest Messages");
 	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Skip NPC Quest Messages"].toggle, "");
 
+	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Minimap HD Fix"].state, "Minimap HD Fix");
+	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Minimap HD Fix"].toggle, "");
+
 	new Texthook(settingsTab, col2_x + 5, 3, "Missile Colors");
 
 	new Colorhook(settingsTab, col2_x, 17, &missileColors["Player"], "Player");
@@ -354,6 +393,8 @@ void Maphack::OnUnload() {
 	skipNpcMessages3->Remove();
 	skipNpcMessages4->Remove();
 	diabloDeadMessage->Remove();
+	minimapOffsetXPatch->Remove();
+	minimapOffsetYPatch->Remove();
 }
 
 void Maphack::OnLoop() {
@@ -403,6 +444,12 @@ Act* lastAct = NULL;
 
 void Maphack::OnDraw() {
 	UnitAny* player = D2CLIENT_GetPlayerUnit();
+
+	// Screen resolution change
+	if (prevScreenSizeX != *p_D2CLIENT_ScreenSizeX
+		|| prevScreenSizeY != *p_D2CLIENT_ScreenSizeY) {
+		UpdateMinimapSettings();
+	}
 
 	if (!player || !player->pAct || player->pPath->pRoom1->pRoom2->pLevel->dwLevelNo == 0)
 		return;
@@ -721,6 +768,7 @@ void Maphack::OnAutomapDraw() {
 void Maphack::OnGameJoin() {
 	ResetRevealed();
 	automapLevels.clear();
+	UpdateMinimapSettings();
 	*p_D2CLIENT_AutomapOn = Toggles["Show Automap On Join"].state;
 }
 
