@@ -6,7 +6,7 @@
 class Patch;
 
 enum Dll { D2CLIENT=0,D2COMMON,D2GFX,D2LANG,D2WIN,D2NET,D2GAME,D2LAUNCH,FOG,BNCLIENT, STORM, D2CMP, D2MULTI, D2MCPCLIENT};
-enum PatchType { Jump=0xE9, Call=0xE8, NOP=0x90, Push=0x6A };
+enum PatchType { Jump=0xE9, Call=0xE8, NOP=0x90, Push=0x6A, Byte=0x0 };
 
 struct Offsets {
 	int _113c;
@@ -28,6 +28,8 @@ class Patch {
 		bool Remove ();
 
 		bool IsInstalled() { return injected; };
+
+		void SetFunction(int function);
 
 		static int GetDllOffset(Dll dll, int offset);
 		static bool WriteBytes(int address, int len, BYTE* bytes);

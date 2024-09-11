@@ -22,8 +22,11 @@ struct BaseSkill {
 
 class Maphack : public Module {
 	private:
+		int prevScreenSizeX = 640, prevScreenSizeY = 480;
 		int monsterResistanceThreshold;
 		int lkLinesColor;
+		std::map<string, unsigned int> minimapOffsetX;
+		std::map<string, unsigned int> minimapOffsetY;
 		unsigned int revealType;
 		unsigned int maxGhostSelection;
 		unsigned int reloadConfig;
@@ -73,6 +76,8 @@ class Maphack : public Module {
 
 	static Level* GetLevel(Act* pAct, int level);
 	static AutomapLayer* InitLayer(int level);
+
+	void UpdateMinimapSettings();
 };
 
 void Weather_Interception();
