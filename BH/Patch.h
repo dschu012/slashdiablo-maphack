@@ -29,6 +29,8 @@ class Patch {
 
 		bool IsInstalled() { return injected; };
 
+		void SetFunction(int function);
+
 		static int GetDllOffset(Dll dll, int offset);
 		static bool WriteBytes(int address, int len, BYTE* bytes);
 };

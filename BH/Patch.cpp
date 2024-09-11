@@ -117,3 +117,7 @@ bool Patch::Remove() {
 
 	return true;
 }
+
+void Patch::SetFunction(int function) {
+	this->function = function;
+}
